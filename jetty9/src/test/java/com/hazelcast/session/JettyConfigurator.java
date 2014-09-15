@@ -25,6 +25,7 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import java.io.File;
 import java.net.URL;
 
+
 public class JettyConfigurator extends WebContainerConfigurator<Server>{
 
     Server server;
@@ -34,6 +35,7 @@ public class JettyConfigurator extends WebContainerConfigurator<Server>{
     @Override
     public Server configure() throws Exception {
         Server server = new Server(port);
+
         final URL root = new URL(JettyConfigurator.class.getResource("/"), "../test-classes");
         // use file to get correct separator char, replace %20 introduced by URL for spaces
         final String cleanedRoot = new File(root.getFile().replaceAll("%20", " ")).toString();

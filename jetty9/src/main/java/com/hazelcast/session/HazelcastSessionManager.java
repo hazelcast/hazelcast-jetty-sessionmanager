@@ -27,6 +27,7 @@ public class HazelcastSessionManager extends NoSqlSessionManager{
     protected NoSqlSession loadSession(String s) {
         System.out.println("com.hazelcast.session.HazelcastSessionManager.loadSession");
         System.out.println("s = " + s);
+        System.out.println("push test");
         return null;
     }
 

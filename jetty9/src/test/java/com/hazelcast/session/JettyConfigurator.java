@@ -31,7 +31,7 @@ public class JettyConfigurator extends WebContainerConfigurator<Server>{
     @Override
     public Server configure() throws Exception {
         Server server = new Server(port);
-        String sourceDir = "/Users/mesutcelik/hazelcast_enterprise/mesut-hazelcast-enterprise/hazelcast-enterprise-sessions/jetty9/src/main/webapp";
+        String sourceDir = "/Users/emrah/IdeaProjects/jetty-session-replication/hazelcast-enterprise/hazelcast-enterprise-sessions/jetty9/src/main/webapp";
 
         WebAppContext context = new WebAppContext();
         context.setResourceBase(sourceDir);
@@ -39,8 +39,8 @@ public class JettyConfigurator extends WebContainerConfigurator<Server>{
         context.setLogUrlOnStart(true);
         context.setContextPath("/");
         context.setParentLoaderPriority(true);
+        HazelcastSessionIdManager idManager = new HazelcastSessionIdManager(server, clientOnly);
 
-        HazelcastSessionIdManager idManager = new HazelcastSessionIdManager();
         idManager.setWorkerName("worker-"+port);
         server.setSessionIdManager(idManager);
 

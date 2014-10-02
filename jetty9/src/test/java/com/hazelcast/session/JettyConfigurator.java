@@ -39,7 +39,6 @@ public class JettyConfigurator extends WebContainerConfigurator<Server>{
         context.setLogUrlOnStart(true);
         context.setContextPath("/");
         context.setParentLoaderPriority(true);
-
         HazelcastSessionIdManager idManager = new HazelcastSessionIdManager(server, clientOnly);
 
         idManager.setWorkerName("worker-"+port);

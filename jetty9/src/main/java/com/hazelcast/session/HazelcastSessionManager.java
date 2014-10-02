@@ -112,7 +112,6 @@ public class HazelcastSessionManager extends NoSqlSessionManager {
         } catch (Exception e) {
             LOG.warn("HazelcastSessionManager:save:exception", e);
         }
-
         return null;
     }
 

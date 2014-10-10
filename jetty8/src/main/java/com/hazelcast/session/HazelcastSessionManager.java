@@ -3,7 +3,6 @@ package com.hazelcast.session;
 import com.hazelcast.core.IMap;
 import org.eclipse.jetty.nosql.NoSqlSession;
 import org.eclipse.jetty.nosql.NoSqlSessionManager;
-import org.eclipse.jetty.server.SessionIdManager;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 
@@ -38,7 +37,9 @@ public class HazelcastSessionManager extends NoSqlSessionManager {
         LOG.info("HazelcastSessionManager.doStart()");
         super.doStart();
         String[] hosts = getContextHandler().getVirtualHosts();
-
+        if (hosts == null || hosts.length == 0) {
+            hosts = getContextHandler().getConnectorNames();
+        }
         if (hosts == null || hosts.length == 0) {
             hosts = new String[] {"::"}; // IPv6 equiv of 0.0.0.0
         }
@@ -268,9 +269,9 @@ public class HazelcastSessionManager extends NoSqlSessionManager {
     }
 
     @Override
-    protected void expire(String idInCluster) {
+    protected void invalidateSession(String idInCluster) {
 
-        super.expire(idInCluster);
+        super.invalidateSession(idInCluster);
         
         /*
          * pull back the 'valid' value, we can check if its false, if is we don't need to
@@ -282,13 +283,6 @@ public class HazelcastSessionManager extends NoSqlSessionManager {
             o.setValid(false);
             sessions.put(idInCluster, o);
         }
-    }
-
-    @Override
-    protected void update(NoSqlSession session, String newClusterId, String newNodeId) throws Exception {
-        HazelcastSessionData sessionData = sessions.get(session.getClusterId());
-        sessions.put(newClusterId, sessionData);
-        sessions.remove(session.getClusterId());
     }
 
     /**

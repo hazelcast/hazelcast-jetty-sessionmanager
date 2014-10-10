@@ -27,12 +27,12 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <name>Hazelcast Enterprise Session Replication(Jetty9)</name>
-    <artifactId>hazelcast-enterprise-jetty9</artifactId>
+    <name>Hazelcast Enterprise Session Replication(Jetty8)</name>
+    <artifactId>hazelcast-enterprise-jetty8</artifactId>
     <packaging>jar</packaging>
 
     <properties>
-        <jetty.version>9.2.3.v20140905</jetty.version>
+        <jetty.version>8.1.16.v20140903</jetty.version>
         <!-- needed for checkstyle/findbugs -->
         <main.basedir>${project.parent.parent.basedir}</main.basedir>
     </properties>
@@ -69,11 +69,6 @@
             <groupId>com.hazelcast</groupId>
             <artifactId>tomcat-core</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>3.1.0</version>
         </dependency>
     </dependencies>
 

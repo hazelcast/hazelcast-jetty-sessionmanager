@@ -31,7 +31,7 @@ public class JettyConfigurator extends WebContainerConfigurator<Server>{
     @Override
     public Server configure() throws Exception {
         Server server = new Server(port);
-        String sourceDir = "../hazelcast-enterprise/hazelcast-enterprise-sessions/jetty7/src/main/webapp";
+        String sourceDir = "./hazelcast-enterprise-sessions/jetty7/src/main/webapp";
 
         WebAppContext context = new WebAppContext();
         context.setResourceBase(sourceDir);

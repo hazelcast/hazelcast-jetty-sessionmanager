@@ -3,7 +3,6 @@ package com.hazelcast.session;
 import com.hazelcast.core.IMap;
 import org.eclipse.jetty.nosql.NoSqlSession;
 import org.eclipse.jetty.nosql.NoSqlSessionManager;
-import org.eclipse.jetty.server.SessionIdManager;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 
@@ -22,7 +21,7 @@ public class HazelcastSessionManager extends NoSqlSessionManager {
     /**
      * the context id is only set when this class has been started
      */
-    private String contextId = null;
+    private String contextId;
 
     /**
      * Distributed session data,
@@ -40,18 +39,18 @@ public class HazelcastSessionManager extends NoSqlSessionManager {
         String[] hosts = getContextHandler().getVirtualHosts();
 
         if (hosts == null || hosts.length == 0) {
-            hosts = new String[] {"::"}; // IPv6 equiv of 0.0.0.0
+            // IPv6 equiv of 0.0.0.0
+            hosts = new String[] {"::"};
         }
 
         String contextPath = getContext().getContextPath();
-        if (contextPath == null || "".equals(contextPath))
-        {
+        if (contextPath == null || "".equals(contextPath)) {
             contextPath = "*";
         }
         LOG.debug("HazelcastSessionManager:doStart():contextpath: " + contextPath);
-        contextId = createContextId(hosts,contextPath);
+        contextId = createContextId(hosts, contextPath);
         LOG.debug("HazelcastSessionManager:doStart():contextId: " + contextId);
-        sessions= ((HazelcastSessionIdManager) getSessionIdManager()).getSessions();
+        sessions = ((HazelcastSessionIdManager) getSessionIdManager()).getSessions();
 
     }
 
@@ -68,34 +67,9 @@ public class HazelcastSessionManager extends NoSqlSessionManager {
             }
 
             // handle valid or invalid
-            if (session.isValid())
-            {
+            if (session.isValid()) {
                 // handle new or existing
-                if (version == null) {
-                    // New session
-                    version = new Long(1);
-                    sessionData.setCreationTime(session.getCreationTime());
-                    sessionData.setValid(true);
-                    sessionData.setVersion(version);
-                } else {
-                    version = new Long(((Number)version).longValue() + 1);
-                    sessionData.setVersion(version);
-                }
-
-                sessionData.setAccessed(session.getAccessed());
-                Set<String> names = session.takeDirty();
-                if (isSaveAllAttributes()) {
-                    names.addAll(session.getNames()); // note dirty may include removed names
-                }
-
-                for (String name : names) {
-                    Object value = session.getAttribute(name);
-                    if (value == null) {
-                        sessionData.getAttributeMap().remove(name);
-                    } else {
-                        sessionData.getAttributeMap().put(name, value);
-                    }
-                }
+                version = handleSessionAddition(session, version, sessionData);
             } else {
                 sessionData.setValid(false);
              //   sessionData.setInvalidationTime(System.currentTimeMillis());
@@ -113,6 +87,36 @@ public class HazelcastSessionManager extends NoSqlSessionManager {
             LOG.warn("HazelcastSessionManager:save:exception", e);
         }
         return null;
+    }
+
+    private Object handleSessionAddition(NoSqlSession session, Object version, HazelcastSessionData sessionData) {
+        if (version == null) {
+            // New session
+            version = new Long(1);
+            sessionData.setCreationTime(session.getCreationTime());
+            sessionData.setValid(true);
+            sessionData.setVersion(version);
+        } else {
+            version = new Long(((Number) version).longValue() + 1);
+            sessionData.setVersion(version);
+        }
+
+        sessionData.setAccessed(session.getAccessed());
+        Set<String> names = session.takeDirty();
+        if (isSaveAllAttributes()) {
+            // note dirty may include removed names
+            names.addAll(session.getNames());
+        }
+
+        for (String name : names) {
+            Object value = session.getAttribute(name);
+            if (value == null) {
+                sessionData.getAttributeMap().remove(name);
+            } else {
+                sessionData.getAttributeMap().put(name, value);
+            }
+        }
+        return version;
     }
 
     @Override
@@ -154,29 +158,7 @@ public class HazelcastSessionManager extends NoSqlSessionManager {
         try {
             session.clearAttributes();
 
-            Map<String, Object> attrs = o.getAttributeMap();
-
-            if (attrs != null) {
-                for (String name : attrs.keySet()) {
-
-                    String attr = name;
-                    Object value = attrs.get(name);
-
-                    if (attrs.keySet().contains(name)) {
-                        session.doPutOrRemove(attr,value);
-                        session.bindValue(attr,value);
-                    } else {
-                        session.doPutOrRemove(attr,value);
-                    }
-                }
-                // cleanup, remove values from session, that don't exist in data anymore:
-                for (String name : session.getNames()) {
-                    if (!attrs.keySet().contains(name)) {
-                        session.doPutOrRemove(name,null);
-                        session.unbindValue(name,session.getAttribute(name));
-                    }
-                }
-            }
+            handleSessionBindings(session, o);
 
             /*
              * We are refreshing so we should update the last accessed time.
@@ -191,12 +173,37 @@ public class HazelcastSessionManager extends NoSqlSessionManager {
             session.didActivate();
 
             return version;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             LOG.warn("HazelcastSessionManager:refresh:exception", e);
         }
 
         return null;
+    }
+
+    private void handleSessionBindings(NoSqlSession session, HazelcastSessionData o) {
+        Map<String, Object> attrs = o.getAttributeMap();
+
+        if (attrs != null) {
+            for (String name : attrs.keySet()) {
+
+                String attr = name;
+                Object value = attrs.get(name);
+
+                if (attrs.keySet().contains(name)) {
+                    session.doPutOrRemove(attr, value);
+                    session.bindValue(attr, value);
+                } else {
+                    session.doPutOrRemove(attr, value);
+                }
+            }
+            // cleanup, remove values from session, that don't exist in data anymore:
+            for (String name : session.getNames()) {
+                if (!attrs.keySet().contains(name)) {
+                    session.doPutOrRemove(name, null);
+                    session.unbindValue(name, session.getAttribute(name));
+                }
+            }
+        }
     }
 
     /*------------------------------------------------------------ */
@@ -220,7 +227,7 @@ public class HazelcastSessionManager extends NoSqlSessionManager {
             Long created = o.getCreationTime();
             Long accessed = o.getAccessed();
 
-            NoSqlSession session = new NoSqlSession(this,created,accessed,clusterId,version);
+            NoSqlSession session = new NoSqlSession(this, created, accessed, clusterId, version);
 
             // get the attributes for the context
             Map<String, Object> attrs = o.getAttributeMap();
@@ -231,17 +238,15 @@ public class HazelcastSessionManager extends NoSqlSessionManager {
                     String attr = name;
                     Object value = attrs.get(name);
 
-                    session.doPutOrRemove(attr,value);
-                    session.bindValue(attr,value);
+                    session.doPutOrRemove(attr, value);
+                    session.bindValue(attr, value);
 
                 }
             }
             session.didActivate();
 
             return session;
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             LOG.warn("HazelcastSessionManager:loadSession:exception", e);
         }
         return null;
@@ -259,10 +264,10 @@ public class HazelcastSessionManager extends NoSqlSessionManager {
         HazelcastSessionData o = sessions.get(session.getClusterId());
 
         if (o != null) {
-            //TODO: ??sessions.remove(session.getClusterId());
+            LOG.debug("HazelcastSessionManager:remove: " + session.getClusterId());
+            // ??sessions.remove(session.getClusterId());
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
@@ -271,7 +276,6 @@ public class HazelcastSessionManager extends NoSqlSessionManager {
     protected void expire(String idInCluster) {
 
         super.expire(idInCluster);
-        
         /*
          * pull back the 'valid' value, we can check if its false, if is we don't need to
          * reset it to false
@@ -297,13 +301,11 @@ public class HazelcastSessionManager extends NoSqlSessionManager {
      * the count() operation itself is optimized to perform on the server side
      * and avoid loading to client side.
      */
-    public long getSessionStoreCount()
-    {
+    public long getSessionStoreCount() {
         return sessions.size();
     }
 
-    private String createContextId(String[] virtualHosts, String contextPath)
-    {
+    private String createContextId(String[] virtualHosts, String contextPath) {
         String contextId = virtualHosts[0] + contextPath;
 
         return contextId;

@@ -58,17 +58,28 @@ import java.util.TimerTask;
  *     </li>
  * </ul>
  *
- * Also, this class has a clean-up timer {@link com.hazelcast.session.HazelcastSessionIdManager#cleanUpTimer} which is responsible of
+ * Also, this class has a clean-up timer {@link com.hazelcast.session.HazelcastSessionIdManager#cleanUpTimer}
+ * which is responsible of
  * removing expired session data from session map.
  * </p>
  */
 public class HazelcastSessionIdManager extends AbstractSessionIdManager {
 
-    private final static Logger LOG = Log.getLogger("com.hazelcast.session");
+    private static final Logger LOG = Log.getLogger("com.hazelcast.session");
 
-    private final static String DEFAULT_MAP_NAME = "session-replication-map";
-    private final static String DEFAULT_HZ_CONFIG_LOCATION = "hazelcast.xml";
-    private final static String DEFAULT_HZ_CLIENT_CONFIG_LOCATION =  "hazelcast-client-default.xml";
+    private static final String DEFAULT_MAP_NAME = "session-replication-map";
+    private static final String DEFAULT_HZ_CONFIG_LOCATION = "hazelcast.xml";
+    private static final String DEFAULT_HZ_CLIENT_CONFIG_LOCATION =  "hazelcast-client-default.xml";
+
+    private static final int MSECS_IN_DAY = 24 * 60 * 60 * 1000;
+    private static final int MSECS_IN_HOUR = 60 * 60 * 1000;
+
+    protected Server server;
+
+    /**
+     * the (local) collection of session ids known to this manager
+     */
+    protected final Set<String> sessionsIds = new HashSet<String>();
 
     /**
      * Hazelcast config location, can be left <code>null</code> to use defaults
@@ -89,16 +100,16 @@ public class HazelcastSessionIdManager extends AbstractSessionIdManager {
     private TimerTask cleanUpTask;
 
     /**
-     * clean-up process working period
+     * clean-up process working period in milliseconds
+     * Default value => everday
      */
-    private long cleanUpPeriod = 24 * 60 * 60 * 1000; // every day
+    private long cleanUpPeriod = MSECS_IN_DAY;
 
     /**
      * Maximum age of session data entries to be swiped by clean-up task
+     * Default value => one hour
      */
-    private long cleanUpInvalidAge = 60 * 60 * 1000; //one hour
-
-    protected Server server;
+    private long cleanUpInvalidAge = MSECS_IN_HOUR;
 
     /**
      * Distributed session data
@@ -106,11 +117,6 @@ public class HazelcastSessionIdManager extends AbstractSessionIdManager {
     private IMap<String, HazelcastSessionData> sessions;
 
     private HazelcastInstance instance;
-
-    /**
-     * the (local) collection of session ids known to this manager
-     */
-    protected final Set<String> sessionsIds = new HashSet<String>();
 
     /**
      * Creates a session manager with defaults<br/>
@@ -141,7 +147,7 @@ public class HazelcastSessionIdManager extends AbstractSessionIdManager {
      */
     @Override
     public boolean idInUse(String sessionId) {
-        LOG.debug("HazelcastSessionIdManager:idInUse:sessionId= " + sessionId );
+        LOG.debug("HazelcastSessionIdManager:idInUse:sessionId= " + sessionId);
         HazelcastSessionData o = sessions.get(sessionId);
 
         boolean idInUse = false;
@@ -174,8 +180,7 @@ public class HazelcastSessionIdManager extends AbstractSessionIdManager {
      * @param session
      */
     @Override
-    public void removeSession(HttpSession session)
-    {
+    public void removeSession(HttpSession session) {
         if (session == null) {
             return;
         }
@@ -194,12 +199,12 @@ public class HazelcastSessionIdManager extends AbstractSessionIdManager {
             //tell all contexts that may have a session object with this id to
             //get rid of them
             Handler[] contexts = server.getChildHandlersByClass(ContextHandler.class);
-            for (int i=0; contexts!=null && i<contexts.length; i++) {
-                SessionHandler sessionHandler = ((ContextHandler)contexts[i]).getChildHandlerByClass(SessionHandler.class);
+            for (int i = 0; contexts != null && i < contexts.length; i++) {
+                SessionHandler sessionHandler = ((ContextHandler) contexts[i]).getChildHandlerByClass(SessionHandler.class);
                 if (sessionHandler != null) {
                     SessionManager manager = sessionHandler.getSessionManager();
                     if (manager != null && manager instanceof HazelcastSessionManager) {
-                        ((HazelcastSessionManager)manager).invalidateSession(sessionId);
+                        ((HazelcastSessionManager) manager).invalidateSession(sessionId);
                     }
                 }
             }
@@ -213,14 +218,15 @@ public class HazelcastSessionIdManager extends AbstractSessionIdManager {
      * @return sessionId plus any worker ID.
      */
     @Override
-    public String getNodeId(String clusterId,HttpServletRequest request) {
+    public String getNodeId(String clusterId, HttpServletRequest request) {
         // used in Ajp13Parser
-        String worker=request==null?null:(String)request.getAttribute("org.eclipse.jetty.ajp.JVMRoute");
-        if (worker!=null)
-            return clusterId+'.'+worker;
-
-        if (_workerName!=null)
-            return clusterId+'.'+_workerName;
+        String worker = request == null ? null : (String) request.getAttribute("org.eclipse.jetty.ajp.JVMRoute");
+        if (worker != null) {
+            return clusterId + '.' + worker;
+        }
+        if (_workerName != null) {
+            return clusterId + '.' + _workerName;
+        }
 
         return clusterId;
     }
@@ -232,8 +238,8 @@ public class HazelcastSessionIdManager extends AbstractSessionIdManager {
      */
     @Override
     public String getClusterId(String nodeId) {
-        int dot=nodeId.lastIndexOf('.');
-        return (dot>0)?nodeId.substring(0,dot):nodeId;
+        int dot = nodeId.lastIndexOf('.');
+        return (dot > 0) ? nodeId.substring(0, dot) : nodeId;
     }
 
     /**
@@ -311,10 +317,9 @@ public class HazelcastSessionIdManager extends AbstractSessionIdManager {
      *
 
      */
-    protected void cleanUp()
-    {
+    protected void cleanUp() {
         for (Map.Entry<String, HazelcastSessionData> entry : sessions.entrySet()) {
-            if(entry.getValue().getAccessed() < System.currentTimeMillis() - cleanUpInvalidAge) {
+            if (entry.getValue().getAccessed() < System.currentTimeMillis() - cleanUpInvalidAge) {
                 sessions.remove(entry.getKey());
             }
         }
@@ -324,15 +329,15 @@ public class HazelcastSessionIdManager extends AbstractSessionIdManager {
     @Override
     protected void doStart() throws Exception {
 
-        if(instance == null) {
+        if (instance == null) {
             instance = createHazelcastInstance();
         }
         sessions = initializeSessionMap();
 
-        if(cleanUp) {
+        if (cleanUp) {
             cleanUpTimer = new Timer("HazelcastSessionCleaner", true);
             synchronized (this) {
-                if(cleanUpTask != null) {
+                if (cleanUpTask != null) {
                     cleanUpTask.cancel();
                 }
                 cleanUpTask = new TimerTask() {
@@ -348,7 +353,7 @@ public class HazelcastSessionIdManager extends AbstractSessionIdManager {
 
     @Override
     protected void doStop() throws Exception {
-        if(cleanUpTimer != null) {
+        if (cleanUpTimer != null) {
             cleanUpTimer.cancel();
             cleanUpTimer = null;
         }

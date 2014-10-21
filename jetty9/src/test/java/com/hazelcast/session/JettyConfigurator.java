@@ -25,7 +25,6 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import java.io.File;
 import java.net.URL;
 
-
 public class JettyConfigurator extends WebContainerConfigurator<Server>{
 
     Server server;

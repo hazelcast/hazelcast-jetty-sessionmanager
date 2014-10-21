@@ -30,8 +30,6 @@ import java.util.TimerTask;
 
 /**
  * <p>
- * Based on the {@link org.eclipse.jetty.nosql.mongodb.MongoSessionIdManager}
- * <br/>
  * A jetty instance can only have one session id manager. HazelcastSessionIdManager is responsible of
  * creating Hazelcast instances (client/server/provided) to keep session data distributed and ensuring
  * the cluster-wide unique session id generation.

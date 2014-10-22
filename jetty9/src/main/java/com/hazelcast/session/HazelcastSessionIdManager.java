@@ -65,7 +65,7 @@ public class HazelcastSessionIdManager extends AbstractSessionIdManager {
     private static final Logger LOG = Log.getLogger("com.hazelcast.session");
 
     private static final String DEFAULT_MAP_NAME = "session-replication-map";
-    private static final String DEFAULT_HZ_CONFIG_LOCATION = "hazelcast.xml";
+    private static final String DEFAULT_HZ_CONFIG_LOCATION = "hazelcast-default.xml";
     private static final String DEFAULT_HZ_CLIENT_CONFIG_LOCATION =  "hazelcast-client-default.xml";
 
     private static final int MSECS_IN_DAY = 24 * 60 * 60 * 1000;

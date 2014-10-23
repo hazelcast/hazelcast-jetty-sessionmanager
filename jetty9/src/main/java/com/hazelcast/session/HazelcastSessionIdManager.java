@@ -1,12 +1,6 @@
 package com.hazelcast.session;
 
 
-import com.hazelcast.client.HazelcastClient;
-import com.hazelcast.client.config.ClientConfig;
-import com.hazelcast.client.config.XmlClientConfigBuilder;
-import com.hazelcast.config.Config;
-import com.hazelcast.config.ConfigLoader;
-import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IMap;
 import org.eclipse.jetty.server.Handler;
@@ -20,13 +14,16 @@ import org.eclipse.jetty.util.log.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import static com.hazelcast.session.JettySessionUtils.DAY_IN_MILLISECONDS;
+import static com.hazelcast.session.JettySessionUtils.DEFAULT_MAP_NAME;
+import static com.hazelcast.session.JettySessionUtils.HOUR_IN_MILLISECONDS;
 
 /**
  * <p>
@@ -40,12 +37,12 @@ import java.util.TimerTask;
  *        <code>clientOnly</code> If this attribute is set to <code>true</code>, then an hazelcast client instance
  *        is started<br/>
  *
- *        See {@link HazelcastSessionIdManager#createHazelcastClientInstance()} for details
+ *        See {@link com.hazelcast.session.JettySessionUtils#createHazelcastClientInstance(String)} for details
  *     </li>
  *     <li>
  *         <code>clientOnly</code> If this attribute is set to <code>false</code> (default behaviour), then a hazelcast
  *         instance is started<br/>
- *         See {@link HazelcastSessionIdManager#createHazelcastFullInstance()} for details
+ *         See {@link com.hazelcast.session.JettySessionUtils#createHazelcastFullInstance(String)} for details
  *     </li>
  *     <li>
  *         A preconfigured {@link com.hazelcast.core.HazelcastInstance} can be provided in construction time
@@ -63,13 +60,6 @@ import java.util.TimerTask;
 public class HazelcastSessionIdManager extends AbstractSessionIdManager {
 
     private static final Logger LOG = Log.getLogger("com.hazelcast.session");
-
-    private static final String DEFAULT_MAP_NAME = "session-replication-map";
-    private static final String DEFAULT_HZ_CONFIG_LOCATION = "hazelcast-default.xml";
-    private static final String DEFAULT_HZ_CLIENT_CONFIG_LOCATION =  "hazelcast-client-default.xml";
-
-    private static final int MSECS_IN_DAY = 24 * 60 * 60 * 1000;
-    private static final int MSECS_IN_HOUR = 60 * 60 * 1000;
 
     protected Server server;
 
@@ -100,13 +90,13 @@ public class HazelcastSessionIdManager extends AbstractSessionIdManager {
      * clean-up process working period in milliseconds
      * Default value => everday
      */
-    private long cleanUpPeriod = MSECS_IN_DAY;
+    private long cleanUpPeriod = DAY_IN_MILLISECONDS;
 
     /**
      * Maximum age of session data entries to be swiped by clean-up task
      * Default value => one hour
      */
-    private long cleanUpInvalidAge = MSECS_IN_HOUR;
+    private long cleanUpInvalidAge = HOUR_IN_MILLISECONDS;
 
     /**
      * Distributed session data
@@ -243,54 +233,11 @@ public class HazelcastSessionIdManager extends AbstractSessionIdManager {
 
         HazelcastInstance instance;
         if (clientOnly) {
-            instance = createHazelcastClientInstance();
+            instance = JettySessionUtils.createHazelcastClientInstance(getConfigLocation());
         } else {
-            instance = createHazelcastFullInstance();
+            instance = JettySessionUtils.createHazelcastFullInstance(getConfigLocation());
         }
         return instance;
-    }
-
-    /**
-     * Create a Hazelcast client instance to connect an existing cluster
-     * @return
-     */
-    private HazelcastInstance createHazelcastClientInstance() {
-        ClientConfig config;
-        if (getConfigLocation() == null) {
-            setConfigLocation(DEFAULT_HZ_CLIENT_CONFIG_LOCATION);
-        }
-        try {
-            XmlClientConfigBuilder builder = new XmlClientConfigBuilder(getConfigLocation());
-            config = builder.build();
-        } catch (IOException e) {
-            throw new RuntimeException("failed to load Config:", e);
-        }
-
-        if (config == null) {
-            throw new RuntimeException("failed to find configLocation:" + getConfigLocation());
-        }
-
-        return HazelcastClient.newHazelcastClient(config);
-    }
-
-    private HazelcastInstance createHazelcastFullInstance() {
-
-        Config config;
-        if (getConfigLocation() == null) {
-            setConfigLocation(DEFAULT_HZ_CONFIG_LOCATION);
-        }
-
-        try {
-            config = ConfigLoader.load(getConfigLocation());
-        } catch (IOException e) {
-            throw new RuntimeException("failed to load Config:", e);
-        }
-
-        if (config == null) {
-            throw new RuntimeException("failed to find configLocation:" + getConfigLocation());
-        }
-        config.setInstanceName(com.hazelcast.session.SessionManager.DEFAULT_INSTANCE_NAME);
-        return Hazelcast.getOrCreateHazelcastInstance(config);
     }
 
     private IMap<String, HazelcastSessionData> initializeSessionMap() {

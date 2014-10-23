@@ -9,9 +9,9 @@ import java.util.Map;
  *
  * Session data to be distributed by Hazelcast.
  *
- * Since {@link org.eclipse.jetty.server.session.AbstractSession} does not provide access to
+ * Since org.eclipse.jetty.server.session.AbstractSession does not provide access to
  * its private fields(like <code>created</code>, <code>accessed</code>), required fields to create a
- * {@link org.eclipse.jetty.server.session.AbstractSession} is added to this class instead of extending it.
+ * org.eclipse.jetty.server.session.AbstractSession is added to this class instead of extending it.
  *
  */
 public class HazelcastSessionData implements Serializable {

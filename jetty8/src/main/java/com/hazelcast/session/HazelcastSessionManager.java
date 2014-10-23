@@ -74,8 +74,6 @@ public class HazelcastSessionManager extends NoSqlSessionManager {
                 version = handleSessionAddition(session, version, sessionData);
             } else {
                 sessionData.setValid(false);
-                //   sessionData.setInvalidationTime(System.currentTimeMillis());
-                //sessionData.getAttributeMap().put(getContextKey(),1);
             }
 
             sessions.put(session.getClusterId(), sessionData);
@@ -97,12 +95,11 @@ public class HazelcastSessionManager extends NoSqlSessionManager {
             version = new Long(1);
             sessionData.setCreationTime(session.getCreationTime());
             sessionData.setValid(true);
-            sessionData.setVersion(version);
         } else {
             version = new Long(((Number) version).longValue() + 1);
-            sessionData.setVersion(version);
         }
 
+        sessionData.setVersion(version);
         sessionData.setAccessed(session.getAccessed());
         Set<String> names = session.takeDirty();
         if (isSaveAllAttributes()) {

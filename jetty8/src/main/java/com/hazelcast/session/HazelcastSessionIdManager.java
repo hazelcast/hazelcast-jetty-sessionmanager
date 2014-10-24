@@ -280,9 +280,9 @@ public class HazelcastSessionIdManager extends AbstractSessionIdManager {
         }
         sessions = initializeSessionMap();
 
-        if (cleanUp) {
-            cleanUpTimer = new Timer("HazelcastSessionCleaner", true);
-            synchronized (this) {
+        synchronized (this) {
+            if (cleanUp) {
+                cleanUpTimer = new Timer("HazelcastSessionCleaner", true);
                 if (cleanUpTask != null) {
                     cleanUpTask.cancel();
                 }
@@ -299,11 +299,12 @@ public class HazelcastSessionIdManager extends AbstractSessionIdManager {
 
     @Override
     protected void doStop() throws Exception {
-        if (cleanUpTimer != null) {
-            cleanUpTimer.cancel();
-            cleanUpTimer = null;
+        synchronized (this) {
+            if (cleanUpTimer != null) {
+                cleanUpTimer.cancel();
+                cleanUpTimer = null;
+            }
         }
-
         super.doStop();
     }
 

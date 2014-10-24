@@ -55,7 +55,7 @@ public class HazelcastSessionManager extends NoSqlSessionManager {
     }
 
     @Override
-    protected synchronized Object save(NoSqlSession session, Object version, boolean activateAfterSave)
+    protected Object save(NoSqlSession session, Object version, boolean activateAfterSave)
     {
         LOG.info("HazelcastSessionManager:save: " + session);
         try {

@@ -61,7 +61,7 @@ public class HazelcastSessionIdManager extends AbstractSessionIdManager {
 
     private static final Logger LOG = Log.getLogger("com.hazelcast.session");
 
-    protected Server server;
+    protected final Server server;
 
     /**
      * the (local) collection of session ids known to this manager

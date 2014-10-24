@@ -364,7 +364,7 @@ public class HazelcastSessionIdManager extends AbstractSessionIdManager {
     }
 
     public void setCleanUp(boolean cleanUp) {
-        cleanUp = cleanUp;
+        this.cleanUp = cleanUp;
     }
 
     public long getCleanUpInvalidAge() {
@@ -372,7 +372,7 @@ public class HazelcastSessionIdManager extends AbstractSessionIdManager {
     }
 
     public void setCleanUpInvalidAge(long cleanUpInvalidAge) {
-        cleanUpInvalidAge = cleanUpInvalidAge;
+        this.cleanUpInvalidAge = cleanUpInvalidAge;
     }
 
     public void setCleanUpPeriod(long cleanUpPeriod) {

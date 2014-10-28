@@ -17,6 +17,14 @@
         <jetty.version>9.2.3.v20140905</jetty.version>
         <!-- needed for checkstyle/findbugs -->
         <main.basedir>${project.parent.parent.basedir}</main.basedir>
+        <argLine>-Xms128m -Xmx512m -XX:MaxPermSize=128M
+            -Dhazelcast.version.check.enabled=false
+            -Dhazelcast.mancenter.enabled=false
+            -Dhazelcast.elastic.memory.enabled=true
+            -Dhazelcast.elastic.memory.total.size=128m
+            -Dhazelcast.elastic.memory.chunk.size=1k
+            -Dhazelcast.tomcat.shutdown_hazelcast_instance=false
+        </argLine>
     </properties>
 
     <build>
@@ -58,15 +66,6 @@
                 <configuration>
                     <skipTests>${java6.enabled}</skipTests>
                     <redirectTestOutputToFile>true</redirectTestOutputToFile>
-
-                    <argLine>-Xms128m -Xmx512m -XX:MaxPermSize=128M
-                        -Dhazelcast.version.check.enabled=false
-                        -Dhazelcast.mancenter.enabled=false
-                        -Dhazelcast.elastic.memory.enabled=true
-                        -Dhazelcast.elastic.memory.total.size=128m
-                        -Dhazelcast.elastic.memory.chunk.size=1k
-                        -Dhazelcast.tomcat.shutdown_hazelcast_instance=false
-                    </argLine>
                 </configuration>
             </plugin>
         </plugins>

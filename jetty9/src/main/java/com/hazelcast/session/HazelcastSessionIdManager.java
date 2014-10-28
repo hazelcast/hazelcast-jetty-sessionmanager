@@ -61,7 +61,7 @@ public class HazelcastSessionIdManager extends AbstractSessionIdManager {
 
     private static final Logger LOG = Log.getLogger("com.hazelcast.session");
 
-    protected Server server;
+    protected final Server server;
 
     /**
      * the (local) collection of session ids known to this manager
@@ -303,9 +303,9 @@ public class HazelcastSessionIdManager extends AbstractSessionIdManager {
         }
         sessions = initializeSessionMap();
 
-        if (cleanUp) {
-            cleanUpTimer = new Timer("HazelcastSessionCleaner", true);
-            synchronized (this) {
+        synchronized (this) {
+            if (cleanUp) {
+                cleanUpTimer = new Timer("HazelcastSessionCleaner", true);
                 if (cleanUpTask != null) {
                     cleanUpTask.cancel();
                 }
@@ -322,11 +322,12 @@ public class HazelcastSessionIdManager extends AbstractSessionIdManager {
 
     @Override
     protected void doStop() throws Exception {
-        if (cleanUpTimer != null) {
-            cleanUpTimer.cancel();
-            cleanUpTimer = null;
+        synchronized (this) {
+            if (cleanUpTimer != null) {
+                cleanUpTimer.cancel();
+                cleanUpTimer = null;
+            }
         }
-
         super.doStop();
     }
 
@@ -364,7 +365,7 @@ public class HazelcastSessionIdManager extends AbstractSessionIdManager {
     }
 
     public void setCleanUp(boolean cleanUp) {
-        cleanUp = cleanUp;
+        this.cleanUp = cleanUp;
     }
 
     public long getCleanUpInvalidAge() {
@@ -372,7 +373,7 @@ public class HazelcastSessionIdManager extends AbstractSessionIdManager {
     }
 
     public void setCleanUpInvalidAge(long cleanUpInvalidAge) {
-        cleanUpInvalidAge = cleanUpInvalidAge;
+        this.cleanUpInvalidAge = cleanUpInvalidAge;
     }
 
     public void setCleanUpPeriod(long cleanUpPeriod) {

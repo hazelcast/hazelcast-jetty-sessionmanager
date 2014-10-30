@@ -60,33 +60,30 @@ public class HazelcastSessionManager extends NoSqlSessionManager {
     protected Object save(NoSqlSession session, Object version, boolean activateAfterSave)
     {
         LOG.info("HazelcastSessionManager:save: " + session);
-        try {
-            session.willPassivate();
 
-            HazelcastSessionData sessionData = sessions.get(session.getClusterId());
-            if (sessionData == null) {
-                sessionData = new HazelcastSessionData();
-            }
+        session.willPassivate();
 
-            // handle valid or invalid
-            if (session.isValid()) {
-                // handle new or existing
-                version = handleSessionAddition(session, version, sessionData);
-            } else {
-                sessionData.setValid(false);
-            }
-
-            sessions.put(session.getClusterId(), sessionData);
-
-            if (activateAfterSave) {
-                session.didActivate();
-            }
-
-            return version;
-        } catch (Exception e) {
-            LOG.warn("HazelcastSessionManager:save:exception", e);
+        HazelcastSessionData sessionData = sessions.get(session.getClusterId());
+        if (sessionData == null) {
+            sessionData = new HazelcastSessionData();
         }
-        return null;
+
+        // handle valid or invalid
+        if (session.isValid()) {
+            // handle new or existing
+            version = handleSessionAddition(session, version, sessionData);
+        } else {
+            sessionData.setValid(false);
+        }
+
+        sessions.put(session.getClusterId(), sessionData);
+
+        if (activateAfterSave) {
+            session.didActivate();
+        }
+
+        return version;
+
     }
 
     private Object handleSessionAddition(NoSqlSession session, Object version, HazelcastSessionData sessionData) {
@@ -154,29 +151,24 @@ public class HazelcastSessionManager extends NoSqlSessionManager {
         // We need to update the attributes. We will model this as a passivate,
         // followed by bindings and then activation.
         session.willPassivate();
-        try {
-            session.clearAttributes();
 
-            handleSessionBindings(session, o);
+        session.clearAttributes();
 
-            /*
-             * We are refreshing so we should update the last accessed time.
-             */
+        handleSessionBindings(session, o);
 
-            // Form updates
-            o.setAccessed(System.currentTimeMillis());
+        /*
+         * We are refreshing so we should update the last accessed time.
+         */
 
-            // apply the update
-            sessions.put(session.getClusterId(), o);
+        // Form updates
+        o.setAccessed(System.currentTimeMillis());
 
-            session.didActivate();
+        // apply the update
+        sessions.put(session.getClusterId(), o);
 
-            return version;
-        } catch (Exception e) {
-            LOG.warn("HazelcastSessionManager:refresh:exception", e);
-        }
+        session.didActivate();
 
-        return null;
+        return version;
     }
 
     private void handleSessionBindings(NoSqlSession session, HazelcastSessionData o) {
@@ -221,34 +213,30 @@ public class HazelcastSessionManager extends NoSqlSessionManager {
             return null;
         }
 
-        try {
-            Object version = o.getVersion();
-            Long created = o.getCreationTime();
-            Long accessed = o.getAccessed();
+        Object version = o.getVersion();
+        Long created = o.getCreationTime();
+        Long accessed = o.getAccessed();
 
-            NoSqlSession session = new NoSqlSession(this, created, accessed, clusterId, version);
+        NoSqlSession session = new NoSqlSession(this, created, accessed, clusterId, version);
 
-            // get the attributes for the context
-            Map<String, Object> attrs = o.getAttributeMap();
+        // get the attributes for the context
+        Map<String, Object> attrs = o.getAttributeMap();
 
-            if (attrs != null) {
-                for (String name : attrs.keySet()) {
+        if (attrs != null) {
+            for (String name : attrs.keySet()) {
 
-                    String attr = name;
-                    Object value = attrs.get(name);
+                String attr = name;
+                Object value = attrs.get(name);
 
-                    session.doPutOrRemove(attr, value);
-                    session.bindValue(attr, value);
+                session.doPutOrRemove(attr, value);
+                session.bindValue(attr, value);
 
-                }
             }
-            session.didActivate();
-
-            return session;
-        } catch (Exception e) {
-            LOG.warn("HazelcastSessionManager:loadSession:exception", e);
         }
-        return null;
+        session.didActivate();
+
+        return session;
+
     }
 
 
@@ -285,16 +273,6 @@ public class HazelcastSessionManager extends NoSqlSessionManager {
             o.setValid(false);
             sessions.put(idInCluster, o);
         }
-    }
-
-    /**
-     * returns the total number of session objects in the session store
-     *
-     * the count() operation itself is optimized to perform on the server side
-     * and avoid loading to client side.
-     */
-    public long getSessionStoreCount() {
-        return sessions.size();
     }
 
     private String createContextId(String[] virtualHosts, String contextPath) {

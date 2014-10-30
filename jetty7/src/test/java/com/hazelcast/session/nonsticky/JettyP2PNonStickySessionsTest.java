@@ -9,4 +9,5 @@ public class JettyP2PNonStickySessionsTest extends P2PNonStickySessionsTest {
     protected WebContainerConfigurator<?> getWebContainerConfigurator() {
         return new JettyConfigurator();
     }
+
 }

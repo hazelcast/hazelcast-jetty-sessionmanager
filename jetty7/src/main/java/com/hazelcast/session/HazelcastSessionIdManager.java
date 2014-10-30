@@ -151,9 +151,6 @@ public class HazelcastSessionIdManager extends AbstractSessionIdManager {
      */
     @Override
     public void addSession(HttpSession session) {
-        if (session == null) {
-            return;
-        }
 
         LOG.debug("HazelcastSessionIdManager:addSession:" + session.getId());
 
@@ -169,10 +166,6 @@ public class HazelcastSessionIdManager extends AbstractSessionIdManager {
      */
     @Override
     public void removeSession(HttpSession session) {
-        if (session == null) {
-            return;
-        }
-
         synchronized (sessionsIds) {
             sessionsIds.remove(session.getId());
         }
@@ -316,37 +309,20 @@ public class HazelcastSessionIdManager extends AbstractSessionIdManager {
         this.configLocation = configLocation;
     }
 
-    public HazelcastInstance getInstance() {
-        return instance;
-    }
-
     public void setInstance(HazelcastInstance instance) {
         this.instance = instance;
-    }
-
-    public boolean isClientOnly() {
-        return clientOnly;
     }
 
     public void setClientOnly(boolean clientOnly) {
         this.clientOnly = clientOnly;
     }
 
-
     public IMap<String, HazelcastSessionData> getSessions() {
         return sessions;
     }
 
-    public boolean isCleanUpEnabled() {
-        return cleanUp;
-    }
-
     public void setCleanUp(boolean cleanUp) {
         this.cleanUp = cleanUp;
-    }
-
-    public long getCleanUpInvalidAge() {
-        return cleanUpInvalidAge;
     }
 
     public void setCleanUpInvalidAge(long cleanUpInvalidAge) {

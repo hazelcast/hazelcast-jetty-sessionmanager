@@ -2,9 +2,8 @@ package com.hazelcast.session.nonsticky;
 
 import com.hazelcast.session.JettyConfigurator;
 import com.hazelcast.session.WebContainerConfigurator;
-import com.hazelcast.session.sticky.ClientServerStickySessionsTest;
 
-public class JettyClientServerNonStickySessionsTest extends ClientServerStickySessionsTest {
+public class JettyClientServerNonStickySessionsTest extends ClientServerNonStickySessionsTest {
 
     @Override
     protected WebContainerConfigurator<?> getWebContainerConfigurator() {

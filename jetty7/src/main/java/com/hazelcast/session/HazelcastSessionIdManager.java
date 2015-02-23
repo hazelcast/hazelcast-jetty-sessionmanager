@@ -297,7 +297,9 @@ public class HazelcastSessionIdManager extends AbstractSessionIdManager {
                 cleanUpTimer = null;
             }
         }
-
+        if (clientOnly) {
+            instance.shutdown();
+        }
         super.doStop();
     }
 

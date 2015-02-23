@@ -46,6 +46,7 @@ public class JettyConfigurator extends WebContainerConfigurator<Server>{
         context.setSessionHandler(handler);
 
         server.setHandler(context);
+        server.setGracefulShutdown(0);
 
         return server;
     }
@@ -59,7 +60,6 @@ public class JettyConfigurator extends WebContainerConfigurator<Server>{
     @Override
     public void stop() throws Exception {
         server.stop();
-
     }
 
     @Override

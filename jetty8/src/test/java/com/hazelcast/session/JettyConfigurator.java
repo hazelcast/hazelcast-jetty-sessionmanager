@@ -67,9 +67,19 @@ public class JettyConfigurator extends WebContainerConfigurator<Server>{
     @Override
     public void reload() {
         try {
+            System.out.println("Stopping Jetty");
             server.stop();
-            server.start();
+            System.out.println("Jetty stopped");
         } catch (Exception e) {
+            System.out.println("JETTY_STOP_EXCEPTION");
+            e.printStackTrace();
+        }
+        try {
+            System.out.println("Starting Jetty");
+            server.start();
+            System.out.println("Jetty started");
+        } catch (Exception e) {
+            System.out.println("JETTY_START_EXCEPTION");
             e.printStackTrace();
         }
 

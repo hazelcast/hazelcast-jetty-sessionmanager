@@ -8,6 +8,7 @@ import com.hazelcast.config.ConfigLoader;
 import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.instance.GroupProperties;
 
 import java.io.IOException;
 
@@ -66,5 +67,14 @@ public final class JettySessionUtils {
         }
         config.setInstanceName(DEFAULT_INSTANCE_NAME);
         return Hazelcast.getOrCreateHazelcastInstance(config);
+    }
+
+    public static String getLicenseKeyFromClientConfig(ClientConfig clientConfig) {
+        String licenseKey = clientConfig.getProperty(GroupProperties.PROP_ENTERPRISE_LICENSE_KEY);
+        return licenseKey;
+    }
+
+    public static String getLicenseKeyFromNodeConfig(Config config) {
+        return  config.getLicenseKey();
     }
 }

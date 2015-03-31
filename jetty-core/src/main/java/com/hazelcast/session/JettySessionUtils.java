@@ -9,6 +9,7 @@ import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.instance.GroupProperties;
+import com.hazelcast.license.util.LicenseHelper;
 
 import java.io.IOException;
 
@@ -39,6 +40,8 @@ public final class JettySessionUtils {
                 builder = new XmlClientConfigBuilder(configLocation);
             }
             config = builder.build();
+            String licenseKey = config.getProperty(GroupProperties.PROP_ENTERPRISE_LICENSE_KEY);
+            LicenseHelper.checkLicenseKey(licenseKey);
         } catch (IOException e) {
             throw new RuntimeException("failed to load Config:", e);
         }
@@ -58,6 +61,8 @@ public final class JettySessionUtils {
             } else {
                 config = ConfigLoader.load(configLocation);
             }
+            String licenseKey = config.getLicenseKey();
+            LicenseHelper.checkLicenseKey(licenseKey);
         } catch (IOException e) {
             throw new RuntimeException("failed to load Config:", e);
         }
@@ -67,14 +72,5 @@ public final class JettySessionUtils {
         }
         config.setInstanceName(DEFAULT_INSTANCE_NAME);
         return Hazelcast.getOrCreateHazelcastInstance(config);
-    }
-
-    public static String getLicenseKeyFromClientConfig(ClientConfig clientConfig) {
-        String licenseKey = clientConfig.getProperty(GroupProperties.PROP_ENTERPRISE_LICENSE_KEY);
-        return licenseKey;
-    }
-
-    public static String getLicenseKeyFromNodeConfig(Config config) {
-        return  config.getLicenseKey();
     }
 }

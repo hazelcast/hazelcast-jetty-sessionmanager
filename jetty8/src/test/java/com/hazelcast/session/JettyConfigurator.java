@@ -13,6 +13,21 @@ public class JettyConfigurator extends WebContainerConfigurator<Server>{
     private SessionManager manager;
 
 
+    private String clientServerConfigLocation;
+    private String p2pConfigLocation;
+
+    public JettyConfigurator(String p2pConfigLocation, String clientServerConfigLocation) {
+        super();
+        this.p2pConfigLocation = p2pConfigLocation;
+        this.clientServerConfigLocation = clientServerConfigLocation;
+    }
+
+    public JettyConfigurator() {
+        super();
+        this.clientServerConfigLocation = "hazelcast-client-with-valid-license.xml";
+        this.p2pConfigLocation = "hazelcast-with-valid-license.xml";
+    }
+
     @Override
     public Server configure() throws Exception {
         Server server = new Server(port);
@@ -33,9 +48,9 @@ public class JettyConfigurator extends WebContainerConfigurator<Server>{
         HazelcastSessionIdManager idManager;
 
         if (!clientOnly) {
-            idManager = new HazelcastSessionIdManager(server);
+            idManager = new HazelcastSessionIdManager(server, clientOnly, p2pConfigLocation);
         } else {
-            idManager = new HazelcastSessionIdManager(server, clientOnly);
+            idManager = new HazelcastSessionIdManager(server, clientOnly, clientServerConfigLocation);
         }
 
         idManager.setWorkerName("worker-"+port);

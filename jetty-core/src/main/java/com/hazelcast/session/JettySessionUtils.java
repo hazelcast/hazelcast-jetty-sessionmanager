@@ -40,7 +40,10 @@ public final class JettySessionUtils {
                 builder = new XmlClientConfigBuilder(configLocation);
             }
             config = builder.build();
-            String licenseKey = config.getProperty(GroupProperties.PROP_ENTERPRISE_LICENSE_KEY);
+            String licenseKey = config.getLicenseKey();
+            if (licenseKey == null) {
+                licenseKey = config.getProperty(GroupProperties.PROP_ENTERPRISE_LICENSE_KEY);
+            }
             LicenseHelper.checkLicenseKey(licenseKey);
         } catch (IOException e) {
             throw new RuntimeException("failed to load Config:", e);

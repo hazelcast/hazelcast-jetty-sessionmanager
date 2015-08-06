@@ -1,9 +1,10 @@
 package com.hazelcast.session;
 
-import org.junit.Assert;
 import org.junit.rules.MethodRule;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
+
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author mdogan 17/11/14
@@ -15,7 +16,7 @@ public class Java6ExcludeRule implements MethodRule {
     static {
         String propertyName = "java.specification.version";
         String versionProperty = System.getProperty(propertyName);
-        Assert.assertNotNull(propertyName + " should be set!", versionProperty);
+        assertNotNull(propertyName + " should be set!", versionProperty);
 
         int version = Integer.parseInt(versionProperty.split("\\.")[1]);
         EXCLUDED = version < 7;

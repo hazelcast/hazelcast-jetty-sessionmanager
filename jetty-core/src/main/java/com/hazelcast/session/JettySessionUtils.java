@@ -8,7 +8,7 @@ import com.hazelcast.config.ConfigLoader;
 import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.instance.GroupProperties;
+import com.hazelcast.instance.GroupProperty;
 import com.hazelcast.license.domain.LicenseType;
 import com.hazelcast.license.util.LicenseHelper;
 
@@ -43,7 +43,7 @@ public final class JettySessionUtils {
             config = builder.build();
             String licenseKey = config.getLicenseKey();
             if (licenseKey == null) {
-                licenseKey = config.getProperty(GroupProperties.PROP_ENTERPRISE_LICENSE_KEY);
+                licenseKey = config.getProperty(GroupProperty.ENTERPRISE_LICENSE_KEY);
             }
             LicenseHelper.checkLicenseKey(licenseKey, LicenseType.ENTERPRISE);
         } catch (IOException e) {

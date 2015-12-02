@@ -16,6 +16,8 @@ import com.hazelcast.license.util.LicenseHelper;
 
 import java.io.IOException;
 
+import static com.hazelcast.util.Preconditions.checkNotNull;
+
 /**
  * Utility class for Jetty Session Replication modules
  */
@@ -27,11 +29,11 @@ public final class JettySessionUtils {
     public static final int DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
     public static final int HOUR_IN_MILLISECONDS = 60 * 60 * 1000;
 
-    private JettySessionUtils() { }
+    private JettySessionUtils() {
+    }
 
     /**
      * Create a Hazelcast client instance to connect an existing cluster
-     * @return
      */
     public static HazelcastInstance createHazelcastClientInstance(String configLocation) {
         ClientConfig config;
@@ -47,16 +49,13 @@ public final class JettySessionUtils {
             if (licenseKey == null) {
                 licenseKey = config.getProperty(GroupProperty.ENTERPRISE_LICENSE_KEY);
             }
-            final BuildInfo buildInfo = BuildInfoProvider.getBuildInfo();
-            LicenseHelper.checkLicenseKey(licenseKey, buildInfo.getVersion(),
-                    LicenseType.ENTERPRISE);
+            BuildInfo buildInfo = BuildInfoProvider.getBuildInfo();
+            LicenseHelper.checkLicenseKey(licenseKey, buildInfo.getVersion(), LicenseType.ENTERPRISE);
         } catch (IOException e) {
-            throw new RuntimeException("failed to load Config:", e);
+            throw new RuntimeException("failed to load config", e);
         }
 
-        if (config == null) {
-            throw new RuntimeException("failed to find configLocation:" + configLocation);
-        }
+        checkNotNull(config, "failed to find configLocation: " + configLocation);
 
         return HazelcastClient.newHazelcastClient(config);
     }
@@ -71,18 +70,15 @@ public final class JettySessionUtils {
             }
             String licenseKey = config.getLicenseKey();
 
-            final BuildInfo buildInfo = BuildInfoProvider.getBuildInfo();
-            LicenseHelper.checkLicenseKey(licenseKey, buildInfo.getVersion(),
-                    LicenseType.ENTERPRISE);
+            BuildInfo buildInfo = BuildInfoProvider.getBuildInfo();
+            LicenseHelper.checkLicenseKey(licenseKey, buildInfo.getVersion(), LicenseType.ENTERPRISE);
         } catch (IOException e) {
-            throw new RuntimeException("failed to load Config:", e);
+            throw new RuntimeException("failed to load config", e);
         }
 
-        if (config == null) {
-            throw new RuntimeException("failed to find configLocation:" + configLocation);
-        }
+        checkNotNull(config, "failed to find configLocation: " + configLocation);
+
         config.setInstanceName(DEFAULT_INSTANCE_NAME);
         return Hazelcast.getOrCreateHazelcastInstance(config);
     }
-
 }

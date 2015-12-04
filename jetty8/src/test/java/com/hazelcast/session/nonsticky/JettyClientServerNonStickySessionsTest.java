@@ -9,7 +9,7 @@ import org.junit.runner.RunWith;
 
 @RunWith(EnterpriseSerialJUnitClassRunner.class)
 @Category(QuickTest.class)
-public class JettyClientServerNonStickySessionsTest extends ClientServerNonStickySessionsTest {
+public class JettyClientServerNonStickySessionsTest extends AbstractClientServerNonStickySessionsTest {
 
     @Override
     protected WebContainerConfigurator<?> getWebContainerConfigurator() {

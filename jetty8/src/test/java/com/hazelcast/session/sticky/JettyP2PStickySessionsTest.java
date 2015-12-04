@@ -9,7 +9,7 @@ import org.junit.runner.RunWith;
 
 @RunWith(EnterpriseSerialJUnitClassRunner.class)
 @Category(QuickTest.class)
-public class JettyP2PStickySessionsTest extends P2PStickySessionsTest {
+public class JettyP2PStickySessionsTest extends AbstractP2PStickySessionsTest {
 
     @Override
     protected WebContainerConfigurator<?> getWebContainerConfigurator() {

@@ -29,7 +29,7 @@ import org.junit.runner.RunWith;
 
 @RunWith(EnterpriseSerialJUnitClassRunner.class)
 @Category(QuickTest.class)
-public class JettyClientServerStickySessionsTest extends ClientServerStickySessionsTest {
+public class JettyClientServerStickySessionsTest extends AbstractClientServerStickySessionsTest {
 
     @Rule
     public Java6ExcludeRule java6ExcludeRule = new Java6ExcludeRule();

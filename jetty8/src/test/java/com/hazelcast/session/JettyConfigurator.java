@@ -6,6 +6,7 @@ import org.eclipse.jetty.webapp.WebAppContext;
 
 import java.io.File;
 import java.net.URL;
+import java.net.URLDecoder;
 
 public class JettyConfigurator extends WebContainerConfigurator<Server>{
 
@@ -32,8 +33,7 @@ public class JettyConfigurator extends WebContainerConfigurator<Server>{
     public Server configure() throws Exception {
         Server server = new Server(port);
         final URL root = new URL(JettyConfigurator.class.getResource("/"), "../test-classes");
-        // use file to get correct separator char, replace %20 introduced by URL for spaces
-        final String cleanedRoot = new File(root.getFile().replaceAll("%20", " ")).toString();
+        final String cleanedRoot = URLDecoder.decode(root.getFile(), "UTF-8");
 
         final String fileSeparator = File.separator.equals("\\") ? "\\\\" : File.separator;
         final String sourceDir = cleanedRoot + File.separator + JettyConfigurator.class.getPackage().getName().replaceAll("\\.", fileSeparator) + File.separator + "webapp" + File.separator;

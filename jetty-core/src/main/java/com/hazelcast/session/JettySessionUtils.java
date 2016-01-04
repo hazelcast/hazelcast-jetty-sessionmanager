@@ -50,7 +50,8 @@ public final class JettySessionUtils {
                 licenseKey = config.getProperty(GroupProperty.ENTERPRISE_LICENSE_KEY);
             }
             BuildInfo buildInfo = BuildInfoProvider.getBuildInfo();
-            LicenseHelper.checkLicenseKey(licenseKey, buildInfo.getVersion(), LicenseType.ENTERPRISE);
+            LicenseHelper.checkLicenseKey(licenseKey, buildInfo.getVersion(),
+                    LicenseType.ENTERPRISE, LicenseType.ENTERPRISE_HD);
         } catch (IOException e) {
             throw new RuntimeException("failed to load config", e);
         }

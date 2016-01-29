@@ -16,7 +16,7 @@
     <properties>
         <jetty.version>8.1.16.v20140903</jetty.version>
         <!-- needed for checkstyle/findbugs -->
-        <main.basedir>${project.parent.parent.basedir}</main.basedir>
+        <main.basedir>${project.parent.basedir}</main.basedir>
     </properties>
 
     <build>

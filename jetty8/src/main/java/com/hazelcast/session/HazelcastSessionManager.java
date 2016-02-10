@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2008-2016, Hazelcast, Inc. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.hazelcast.session;
 
 import com.hazelcast.core.IMap;
@@ -10,9 +26,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- *  Responsible of managing the session lifecycle
- *  There is one session manager per web application
- *
+ * Responsible of managing the session lifecycle
+ * There is one session manager per web application
  */
 public class HazelcastSessionManager extends NoSqlSessionManager {
 
@@ -26,14 +41,12 @@ public class HazelcastSessionManager extends NoSqlSessionManager {
     /**
      * Distributed session data,
      * for local copies of sessions see {@link org.eclipse.jetty.nosql.NoSqlSessionManager#_sessions}
-     *
      */
     private IMap<String, HazelcastSessionData> sessions;
 
 
     @Override
     public void doStart() throws Exception {
-
         LOG.info("HazelcastSessionManager.doStart()");
         super.doStart();
         String[] hosts = getContextHandler().getVirtualHosts();
@@ -42,7 +55,7 @@ public class HazelcastSessionManager extends NoSqlSessionManager {
         }
         if (hosts == null || hosts.length == 0) {
             // IPv6 equiv of 0.0.0.0
-            hosts = new String[] {"::"};
+            hosts = new String[]{"::"};
         }
 
         String contextPath = getContext().getContextPath();
@@ -53,7 +66,6 @@ public class HazelcastSessionManager extends NoSqlSessionManager {
         contextId = createContextId(hosts, contextPath);
         LOG.debug("HazelcastSessionManager:doStart():contextId: " + contextId);
         sessions = ((HazelcastSessionIdManager) getSessionIdManager()).getSessions();
-
     }
 
     @Override
@@ -115,7 +127,6 @@ public class HazelcastSessionManager extends NoSqlSessionManager {
 
     @Override
     protected Object refresh(NoSqlSession session, Object version) {
-
         LOG.info("HazelcastSessionManager:refresh: " + session);
 
         // check if in memory version is the same as in hazelcast
@@ -195,10 +206,8 @@ public class HazelcastSessionManager extends NoSqlSessionManager {
         }
     }
 
-    /*------------------------------------------------------------ */
     @Override
     protected synchronized NoSqlSession loadSession(String clusterId) {
-
         LOG.info("HazelcastSessionManager:loadSession: " + clusterId);
         HazelcastSessionData o = sessions.get(clusterId);
 
@@ -210,7 +219,6 @@ public class HazelcastSessionManager extends NoSqlSessionManager {
         if (valid == null || !valid) {
             return null;
         }
-
 
         Object version = o.getVersion();
         Long created = o.getCreationTime();
@@ -229,24 +237,18 @@ public class HazelcastSessionManager extends NoSqlSessionManager {
 
                 session.doPutOrRemove(attr, value);
                 session.bindValue(attr, value);
-
             }
         }
         session.didActivate();
 
         return session;
-
     }
-
 
     @Override
     protected boolean remove(NoSqlSession session) {
-
         /*
-         * Check if the session exists and if it does remove the context
-         * associated with this session
+         * Check if the session exists and if it does remove the context associated with this session
          */
-
         HazelcastSessionData o = sessions.get(session.getClusterId());
 
         if (o != null) {
@@ -260,11 +262,9 @@ public class HazelcastSessionManager extends NoSqlSessionManager {
 
     @Override
     protected void invalidateSession(String idInCluster) {
-
         super.invalidateSession(idInCluster);
         /*
-         * pull back the 'valid' value, we can check if its false, if is we don't need to
-         * reset it to false
+         * pull back the 'valid' value, we can check if its false, if is we don't need to reset it to false
          */
         HazelcastSessionData o = sessions.get(idInCluster);
 
@@ -279,5 +279,4 @@ public class HazelcastSessionManager extends NoSqlSessionManager {
 
         return contextId;
     }
-
 }

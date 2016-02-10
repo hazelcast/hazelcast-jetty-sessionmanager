@@ -1,5 +1,20 @@
-package com.hazelcast.session;
+/*
+ * Copyright (c) 2008-2016, Hazelcast, Inc. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
+package com.hazelcast.session;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IMap;
@@ -79,7 +94,6 @@ public class HazelcastSessionIdManager extends AbstractSessionIdManager {
      */
     private boolean clientOnly;
 
-
     /**
      * Clean-up process is enabled by default
      */
@@ -147,21 +161,20 @@ public class HazelcastSessionIdManager extends AbstractSessionIdManager {
     }
 
     /**
-     *  Add session id to known local ids
+     * Add session id to known local ids
      */
     @Override
     public void addSession(HttpSession session) {
-
         LOG.debug("HazelcastSessionIdManager:addSession:" + session.getId());
 
         synchronized (sessionsIds) {
             sessionsIds.add(session.getId());
         }
-
     }
 
     /**
      * Remove session from known local ids
+     *
      * @param session
      */
     @Override
@@ -173,7 +186,6 @@ public class HazelcastSessionIdManager extends AbstractSessionIdManager {
 
     @Override
     public void invalidateAll(String sessionId) {
-
         synchronized (sessionsIds) {
             sessionsIds.remove(sessionId);
 
@@ -192,7 +204,8 @@ public class HazelcastSessionIdManager extends AbstractSessionIdManager {
         }
     }
 
-    /** Get the session ID with any worker ID.
+    /**
+     * Get the session ID with any worker ID.
      *
      * @param clusterId
      * @param request
@@ -212,7 +225,8 @@ public class HazelcastSessionIdManager extends AbstractSessionIdManager {
         return clusterId;
     }
 
-    /** Get the session ID without any worker ID.
+    /**
+     * Get the session ID without any worker ID.
      *
      * @param nodeId the node id
      * @return sessionId without any worker ID.
@@ -227,7 +241,6 @@ public class HazelcastSessionIdManager extends AbstractSessionIdManager {
      * Create a hazelcast client/server instance depending on the clientOnly property
      */
     private HazelcastInstance createHazelcastInstance() {
-
         HazelcastInstance instance;
         if (clientOnly) {
             instance = JettySessionUtils.createHazelcastClientInstance(getConfigLocation());
@@ -247,13 +260,12 @@ public class HazelcastSessionIdManager extends AbstractSessionIdManager {
      *
      * There are two checks being done here:
      *
-     *  - if the accessed time is older then the current time minus the cleanup invalid age
-     *    and it is no longer valid then remove that session
+     * - if the accessed time is older then the current time minus the cleanup invalid age
+     *   and it is no longer valid then remove that session
      *
-     *  NOTE: if your system supports long lived sessions then the cleanup invalid age should be
-     *  set to zero so the check is skipped.
+     * NOTE: if your system supports long lived sessions then the cleanup invalid age should be
+     * set to zero so the check is skipped.
      *
-
      */
     protected void cleanUp() {
         for (Map.Entry<String, HazelcastSessionData> entry : sessions.entrySet()) {
@@ -261,12 +273,10 @@ public class HazelcastSessionIdManager extends AbstractSessionIdManager {
                 sessions.remove(entry.getKey());
             }
         }
-
     }
 
     @Override
     protected void doStart() throws Exception {
-
         if (instance == null) {
             instance = createHazelcastInstance();
         }

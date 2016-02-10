@@ -22,7 +22,7 @@ public class JettyP2PStickySessionsTest extends AbstractP2PStickySessionsTest {
     }
 
     @Test
-    public void testContextReloadSticky() throws Exception{
+    public void testContextReloadSticky() throws Exception {
         CookieStore cookieStore = new BasicCookieStore();
         executeRequest("write", SERVER_PORT_1, cookieStore);
         System.out.println("reloading");

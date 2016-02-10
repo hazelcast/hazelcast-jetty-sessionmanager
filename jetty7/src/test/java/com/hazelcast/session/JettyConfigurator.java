@@ -8,7 +8,7 @@ import java.io.File;
 import java.net.URL;
 import java.net.URLDecoder;
 
-public class JettyConfigurator extends WebContainerConfigurator<Server>{
+public class JettyConfigurator extends WebContainerConfigurator<Server> {
 
     Server server;
 
@@ -50,7 +50,7 @@ public class JettyConfigurator extends WebContainerConfigurator<Server>{
             idManager = new HazelcastSessionIdManager(server, clientOnly, clientServerConfigLocation);
         }
 
-        idManager.setWorkerName("worker-"+port);
+        idManager.setWorkerName("worker-" + port);
         server.setSessionIdManager(idManager);
 
         HazelcastSessionManager sessionManager = new HazelcastSessionManager();

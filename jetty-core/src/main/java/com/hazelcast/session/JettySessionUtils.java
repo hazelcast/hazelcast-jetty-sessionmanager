@@ -35,15 +35,15 @@ import java.io.IOException;
 import static com.hazelcast.util.Preconditions.checkNotNull;
 
 /**
- * Utility class for Jetty Session Replication modules
+ * Utility class for Jetty Session Replication modules.
  */
-public final class JettySessionUtils {
+final class JettySessionUtils {
 
-    public static final String DEFAULT_INSTANCE_NAME = "SESSION-REPLICATION-INSTANCE";
-    public static final String DEFAULT_MAP_NAME = "session-replication-map";
+    static final String DEFAULT_INSTANCE_NAME = "SESSION-REPLICATION-INSTANCE";
+    static final String DEFAULT_MAP_NAME = "session-replication-map";
 
-    public static final int DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
-    public static final int HOUR_IN_MILLISECONDS = 60 * 60 * 1000;
+    static final int DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
+    static final int HOUR_IN_MILLISECONDS = 60 * 60 * 1000;
 
     private JettySessionUtils() {
     }
@@ -51,7 +51,7 @@ public final class JettySessionUtils {
     /**
      * Create a Hazelcast client instance to connect an existing cluster
      */
-    public static HazelcastInstance createHazelcastClientInstance(String configLocation) {
+    static HazelcastInstance createHazelcastClientInstance(String configLocation) {
         ClientConfig config;
         try {
             XmlClientConfigBuilder builder;
@@ -77,7 +77,7 @@ public final class JettySessionUtils {
         return HazelcastClient.newHazelcastClient(config);
     }
 
-    public static HazelcastInstance createHazelcastFullInstance(String configLocation) {
+    static HazelcastInstance createHazelcastFullInstance(String configLocation) {
         Config config;
         try {
             if (configLocation == null) {

@@ -51,7 +51,7 @@ final class JettySessionUtils {
             config = builder.build();
             String licenseKey = config.getLicenseKey();
             if (licenseKey == null) {
-                licenseKey = config.getProperty(GroupProperty.ENTERPRISE_LICENSE_KEY);
+                licenseKey = config.getProperty(GroupProperty.ENTERPRISE_LICENSE_KEY.getName());
             }
             BuildInfo buildInfo = BuildInfoProvider.getBuildInfo();
             LicenseHelper.checkLicenseKey(licenseKey, buildInfo.getVersion(),

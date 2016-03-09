@@ -15,7 +15,7 @@ import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.instance.BuildInfo;
 import com.hazelcast.instance.BuildInfoProvider;
 import com.hazelcast.instance.GroupProperty;
-import com.hazelcast.license.domain.LicenseType;
+import com.hazelcast.license.domain.Feature;
 import com.hazelcast.license.util.LicenseHelper;
 
 import java.io.IOException;
@@ -23,23 +23,37 @@ import java.io.IOException;
 import static com.hazelcast.util.Preconditions.checkNotNull;
 
 /**
- * Utility class for Jetty Session Replication modules.
+ * Utility class for Jetty Session Replication modules
  */
-final class JettySessionUtils {
+public final class JettySessionUtils {
 
-    static final String DEFAULT_INSTANCE_NAME = "SESSION-REPLICATION-INSTANCE";
-    static final String DEFAULT_MAP_NAME = "session-replication-map";
+    /**
+     * The constant DEFAULT_INSTANCE_NAME.
+     */
+    public static final String DEFAULT_INSTANCE_NAME = "SESSION-REPLICATION-INSTANCE";
+    /**
+     * The constant DEFAULT_MAP_NAME.
+     */
+    public static final String DEFAULT_MAP_NAME = "session-replication-map";
 
-    static final int DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
-    static final int HOUR_IN_MILLISECONDS = 60 * 60 * 1000;
+    /**
+     * The constant DAY_IN_MILLISECONDS.
+     */
+    public static final int DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
+    /**
+     * The constant HOUR_IN_MILLISECONDS.
+     */
+    public static final int HOUR_IN_MILLISECONDS = 60 * 60 * 1000;
 
     private JettySessionUtils() {
     }
 
     /**
      * Create a Hazelcast client instance to connect an existing cluster
+     * @param configLocation the config location
+     * @return the hazelcast instance
      */
-    static HazelcastInstance createHazelcastClientInstance(String configLocation) {
+    public static HazelcastInstance createHazelcastClientInstance(String configLocation) {
         ClientConfig config;
         try {
             XmlClientConfigBuilder builder;
@@ -54,8 +68,8 @@ final class JettySessionUtils {
                 licenseKey = config.getProperty(GroupProperty.ENTERPRISE_LICENSE_KEY.getName());
             }
             BuildInfo buildInfo = BuildInfoProvider.getBuildInfo();
-            LicenseHelper.checkLicenseKey(licenseKey, buildInfo.getVersion(),
-                    LicenseType.ENTERPRISE, LicenseType.ENTERPRISE_HD);
+            LicenseHelper.checkLicenseKeyPerFeature(licenseKey, buildInfo.getVersion(),
+                    Feature.WEB_SESSION);
         } catch (IOException e) {
             throw new RuntimeException("failed to load config", e);
         }
@@ -65,7 +79,13 @@ final class JettySessionUtils {
         return HazelcastClient.newHazelcastClient(config);
     }
 
-    static HazelcastInstance createHazelcastFullInstance(String configLocation) {
+    /**
+     * Create hazelcast full instance.
+     *
+     * @param configLocation the config location
+     * @return the hazelcast instance
+     */
+    public static HazelcastInstance createHazelcastFullInstance(String configLocation) {
         Config config;
         try {
             if (configLocation == null) {
@@ -76,7 +96,8 @@ final class JettySessionUtils {
             String licenseKey = config.getLicenseKey();
 
             BuildInfo buildInfo = BuildInfoProvider.getBuildInfo();
-            LicenseHelper.checkLicenseKey(licenseKey, buildInfo.getVersion(), LicenseType.ENTERPRISE);
+            LicenseHelper.checkLicenseKeyPerFeature(licenseKey, buildInfo.getVersion(),
+                    Feature.WEB_SESSION);
         } catch (IOException e) {
             throw new RuntimeException("failed to load config", e);
         }

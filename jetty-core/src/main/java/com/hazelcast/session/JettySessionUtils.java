@@ -12,11 +12,6 @@ import com.hazelcast.config.ConfigLoader;
 import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.instance.BuildInfo;
-import com.hazelcast.instance.BuildInfoProvider;
-import com.hazelcast.instance.GroupProperty;
-import com.hazelcast.license.domain.Feature;
-import com.hazelcast.license.util.LicenseHelper;
 
 import java.io.IOException;
 
@@ -48,6 +43,10 @@ public final class JettySessionUtils {
     private JettySessionUtils() {
     }
 
+    public static HazelcastInstance createHazelcastClientInstance() {
+        return createHazelcastClientInstance(null);
+    }
+
     /**
      * Create a Hazelcast client instance to connect an existing cluster
      * @param configLocation the config location
@@ -63,13 +62,6 @@ public final class JettySessionUtils {
                 builder = new XmlClientConfigBuilder(configLocation);
             }
             config = builder.build();
-            String licenseKey = config.getLicenseKey();
-            if (licenseKey == null) {
-                licenseKey = config.getProperty(GroupProperty.ENTERPRISE_LICENSE_KEY.getName());
-            }
-            BuildInfo buildInfo = BuildInfoProvider.getBuildInfo();
-            LicenseHelper.checkLicenseKeyPerFeature(licenseKey, buildInfo.getVersion(),
-                    Feature.WEB_SESSION);
         } catch (IOException e) {
             throw new RuntimeException("failed to load config", e);
         }
@@ -77,6 +69,10 @@ public final class JettySessionUtils {
         checkNotNull(config, "failed to find configLocation: " + configLocation);
 
         return HazelcastClient.newHazelcastClient(config);
+    }
+
+    public static HazelcastInstance createHazelcastFullInstance() {
+        return createHazelcastFullInstance(null);
     }
 
     /**
@@ -93,11 +89,6 @@ public final class JettySessionUtils {
             } else {
                 config = ConfigLoader.load(configLocation);
             }
-            String licenseKey = config.getLicenseKey();
-
-            BuildInfo buildInfo = BuildInfoProvider.getBuildInfo();
-            LicenseHelper.checkLicenseKeyPerFeature(licenseKey, buildInfo.getVersion(),
-                    Feature.WEB_SESSION);
         } catch (IOException e) {
             throw new RuntimeException("failed to load config", e);
         }

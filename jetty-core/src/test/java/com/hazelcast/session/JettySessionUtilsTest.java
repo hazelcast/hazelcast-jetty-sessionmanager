@@ -3,8 +3,7 @@ package com.hazelcast.session;
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.enterprise.EnterpriseSerialJUnitClassRunner;
-import com.hazelcast.license.exception.InvalidLicenseException;
+import com.hazelcast.test.HazelcastSerialClassRunner;
 import com.hazelcast.test.HazelcastTestSupport;
 import com.hazelcast.test.annotation.SlowTest;
 import org.junit.After;
@@ -16,7 +15,7 @@ import static com.hazelcast.session.JettySessionUtils.createHazelcastClientInsta
 import static com.hazelcast.session.JettySessionUtils.createHazelcastFullInstance;
 import static org.junit.Assert.assertNotNull;
 
-@RunWith(EnterpriseSerialJUnitClassRunner.class)
+@RunWith(HazelcastSerialClassRunner.class)
 @Category(SlowTest.class)
 public class JettySessionUtilsTest extends HazelcastTestSupport {
 
@@ -34,7 +33,7 @@ public class JettySessionUtilsTest extends HazelcastTestSupport {
     @Test
     public void testCreateHazelcastClientInstance() {
         Hazelcast.newHazelcastInstance();
-        HazelcastInstance instance = createHazelcastClientInstance("hazelcast-client-with-valid-license.xml");
+        HazelcastInstance instance = createHazelcastClientInstance();
         assertNotNull(instance);
     }
 
@@ -52,13 +51,8 @@ public class JettySessionUtilsTest extends HazelcastTestSupport {
 
     @Test
     public void testCreateHazelcastFullInstance() {
-        HazelcastInstance instance = createHazelcastFullInstance("hazelcast-with-valid-license.xml");
+        HazelcastInstance instance = createHazelcastFullInstance();
         assertNotNull(instance);
-    }
-
-    @Test(expected = InvalidLicenseException.class)
-    public void testCreateHazelcastFullInstance_configurationLocationIsNull() {
-        createHazelcastFullInstance(null);
     }
 
     @Test(expected = RuntimeException.class)

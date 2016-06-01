@@ -13,7 +13,6 @@ public class JettyConfigurator extends WebContainerConfigurator<Server> {
     Server server;
     private SessionManager manager;
 
-
     private String clientServerConfigLocation;
     private String p2pConfigLocation;
 
@@ -24,9 +23,6 @@ public class JettyConfigurator extends WebContainerConfigurator<Server> {
     }
 
     public JettyConfigurator() {
-        super();
-        this.clientServerConfigLocation = "hazelcast-client-with-valid-license.xml";
-        this.p2pConfigLocation = "hazelcast-with-valid-license.xml";
     }
 
     @Override

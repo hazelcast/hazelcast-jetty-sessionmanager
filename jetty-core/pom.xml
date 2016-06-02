@@ -3,13 +3,13 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>hazelcast-enterprise-sessions</artifactId>
+        <artifactId>hazelcast-jetty-sessionmanager</artifactId>
         <groupId>com.hazelcast</groupId>
         <version>3.7-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <name>Hazelcast Enterprise Session Replication(jetty-core)</name>
+    <name>Hazelcast Jetty Session Manager(jetty-core)</name>
     <groupId>com.hazelcast</groupId>
     <artifactId>jetty-core</artifactId>
     <packaging>jar</packaging>

@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.hazelcast</groupId>
-    <artifactId>hazelcast-enterprise-sessions</artifactId>
+    <artifactId>hazelcast-jetty-sessionmanager</artifactId>
     <packaging>pom</packaging>
     <version>3.7-SNAPSHOT</version>
-    <name>Hazelcast Enterprise Session Replication</name>
-    <description>Session Replication Module for Hazelcast</description>
+    <name>Hazelcast Jetty Session Manager</name>
+    <description>Jetty Session Manager Module for Hazelcast</description>
     <url>http://www.hazelcast.com/</url>
 
     <properties>
@@ -44,9 +44,9 @@
 
     <licenses>
         <license>
-            <name>Commercial License</name>
-            <url>http://www.hazelcast.com/licenses/LICENSE.txt</url>
-            <distribution>manual</distribution>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
         </license>
     </licenses>
 
@@ -56,10 +56,6 @@
     </organization>
 
     <modules>
-        <module>tomcat-core</module>
-        <module>tomcat6</module>
-        <module>tomcat7</module>
-        <module>tomcat8</module>
         <module>jetty-core</module>
         <module>jetty9</module>
         <module>jetty8</module>

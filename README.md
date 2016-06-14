@@ -1,9 +1,12 @@
 
 ### Jetty Based Web Session Replication
 
+***Sample Code:*** *Please see our <a href="https://github.com/hazelcast/hazelcast-code-samples/tree/master/hazelcast-integration/manager-based-session-replication" target="_blank">sample application</a> for Jetty Based Web Session Replication.*
+
+
 #### Hazelcast Jetty Features and Requirements
 
-Jetty Web Session Replication with Hazelcast is a container specific module that enables session replication for Web Applications without requiring changes to the application.
+<a href="https://github.com/hazelcast/hazelcast-jetty-sessionmanager" target="_blank">Hazelcast Jetty Session Manager</a> is a container specific module that enables session replication for JEE Web Applications without requiring changes to the application.
 
 ***Features***
 
@@ -32,7 +35,7 @@ Latest tested versions are **7.6.16.v20140903**, **8.1.16.v20140903** and **9.2.
 
 #### How Jetty Session Replication Works
 
-Jetty Session Replication in Hazelcast is a Hazelcast Module where each created `HttpSession` Object's state is kept in Hazelcast Distributed Map. 
+Hazelcast Jetty Session Manager is a Hazelcast Module where each created `HttpSession` Object's state is kept in Hazelcast Distributed Map. 
 
 Since the session data are in Hazelcast Distributed Map, you can use all the available features offered by Hazelcast Distributed Map implementation, such as MapStore and WAN Replication.
 
@@ -50,12 +53,11 @@ This type of deployment is simple: just configure your Jetty and launch. There i
 
 The following steps configure a sample P2P for Hazelcast Session Replication.
 
-1. Go to <a href="http://www.hazelcast.org" target="_blank">hazelcast.org</a> and download the latest Hazelcast version.
+1. Go to <a href="http://www.hazelcast.org/" target="_blank">hazelcast.org</a> and download the latest Hazelcast.
 2. Unzip the Hazelcast zip file into the folder `$HAZELCAST_ROOT`.
-3. Update `$HAZELCAST_ROOT/bin/hazelcast.xml` according to your needs 
-4. Put `hazelcast.xml` in the folder `$JETTY_HOME/etc`.
-5. Put `$HAZELCAST_ROOT/lib/hazelcast-all-`<*version*>`.jar`,    `$HAZELCAST_
-_ROOT/lib/hazelcast-`<*jettyversion*>`-`<*version*>`.jar` in the folder `$JETTY_HOME/lib/ext`.
+3. Put `hazelcast.xml` in the folder `$JETTY_HOME/etc`.
+4. Go to <a href="https://github.com/hazelcast/hazelcast-jetty-sessionmanager/releases" target="_blank">hazelcast-jetty-sessionmanager</a> repository and download the latest for your Jetty version.
+5. Put `$HAZELCAST_ROOT/lib/hazelcast-all-`<*version*>`.jar`  and `hazelcast-jetty`<*jettyversion*>`-sessionmanager-`<*version*>`.jar`in the folder `$JETTY_HOME/lib/ext`.
 6. Configure the Session ID Manager. You need to configure a `com.hazelcast.session.HazelcastSessionIdManager` instance in `jetty.xml`. Add the following lines to your `jetty.xml`.
 
  ```xml
@@ -118,12 +120,11 @@ In client/server deployment type, Jetty instances work as clients to an existing
 
 The following steps configure a sample Client/Server for Hazelcast Session Replication.
 
-1. Go to <a href="http://www.hazelcast.org/hazelcast" target="_blank">hazelcast.org</a> and download the latest Hazelcast.
+1. Go to <a href="http://www.hazelcast.org/" target="_blank">hazelcast.org</a> and download the latest Hazelcast.
 2. Unzip the Hazelcast zip file into the folder `$HAZELCAST_ROOT`.
-3. Update `$HAZELCAST_ROOT/bin/hazelcast.xml` according to your needs. 
-4. Put `hazelcast.xml` in the folder `$JETTY_HOME/etc`.
-5. Put `$HAZELCAST_ROOT/lib/hazelcast-all-`<*version*>`.jar`,    `$HAZELCAST_
-_ROOT/lib/hazelcast-`<*jettyversion*>`-`<*version*>`.jar` in the folder `$JETTY_HOME/lib/ext`.
+3. Put `hazelcast.xml` in the folder `$JETTY_HOME/etc`.
+4. Go to <a href="https://github.com/hazelcast/hazelcast-jetty-sessionmanager/releases" target="_blank">hazelcast-jetty-sessionmanager</a> repository and download the latest for your Jetty version.
+5. Put `$HAZELCAST_ROOT/lib/hazelcast-all-`<*version*>`.jar`  and `hazelcast-jetty`<*jettyversion*>`-sessionmanager-`<*version*>`.jar`in the folder `$JETTY_HOME/lib/ext`.
 6. Configure the Session ID Manager. You need to configure a `com.hazelcast.session.HazelcastSessionIdManager` instance in `jetty.xml`. Add the following lines to your `jetty.xml`.
 
  ```xml

@@ -34,6 +34,7 @@
         <maven.compiler.plugin.version>2.5.1</maven.compiler.plugin.version>
         <maven.javadoc.plugin.version>2.9</maven.javadoc.plugin.version>
         <maven.gpg.plugin.version>1.4</maven.gpg.plugin.version>
+        <maven.source.plugin.version>2.2.1</maven.source.plugin.version>
 
         <maven.surefire.plugin.version>2.18.1</maven.surefire.plugin.version>
         <maven.checkstyle.plugin.version>2.15</maven.checkstyle.plugin.version>
@@ -54,6 +55,19 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
+
+    <scm>
+        <connection>scm:git:git://github.com/hazelcast/hazelcast-jetty-sessionmanager.git</connection>
+        <developerConnection>scm:git:git@github.com:hazelcast/hazelcast-jetty-sessionmanager.git</developerConnection>
+        <url>https://github.com/hazelcast/hazelcast-jetty-sessionmanager/</url>
+    </scm>
+    <developers>
+        <developer>
+            <id>emrahkocaman</id>
+            <name>Emrah Kocaman</name>
+            <email>emrah@hazelcast.com</email>
+        </developer>
+    </developers>
 
     <organization>
         <name>Hazelcast, Inc.</name>
@@ -104,6 +118,19 @@
                     <excludedGroups>com.hazelcast.test.annotation.NightlyTest,com.hazelcast.test.annotation.SlowTest
                     </excludedGroups>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>${maven.source.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>

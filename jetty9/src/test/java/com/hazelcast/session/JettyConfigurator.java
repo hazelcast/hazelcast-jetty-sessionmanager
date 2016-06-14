@@ -1,6 +1,7 @@
 package com.hazelcast.session;
 
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.SessionManager;
 import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.webapp.WebAppContext;
 
@@ -11,7 +12,6 @@ import java.net.URLDecoder;
 public class JettyConfigurator extends WebContainerConfigurator<Server> {
 
     Server server;
-    private SessionManager manager;
 
     private String clientServerConfigLocation;
     private String p2pConfigLocation;
@@ -84,10 +84,5 @@ public class JettyConfigurator extends WebContainerConfigurator<Server> {
             e.printStackTrace();
         }
 
-    }
-
-    @Override
-    public SessionManager getManager() {
-        return manager;
     }
 }

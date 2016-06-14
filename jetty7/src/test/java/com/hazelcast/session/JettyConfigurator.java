@@ -83,9 +83,4 @@ public class JettyConfigurator extends WebContainerConfigurator<Server> {
         }
 
     }
-
-    @Override
-    public SessionManager getManager() {
-        return null;
-    }
 }

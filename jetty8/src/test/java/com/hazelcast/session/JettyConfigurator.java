@@ -11,7 +11,6 @@ import java.net.URLDecoder;
 public class JettyConfigurator extends WebContainerConfigurator<Server> {
 
     Server server;
-    private SessionManager manager;
 
     private String clientServerConfigLocation;
     private String p2pConfigLocation;
@@ -94,10 +93,5 @@ public class JettyConfigurator extends WebContainerConfigurator<Server> {
             e.printStackTrace();
         }
 
-    }
-
-    @Override
-    public SessionManager getManager() {
-        return manager;
     }
 }

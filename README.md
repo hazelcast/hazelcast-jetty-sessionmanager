@@ -1,10 +1,22 @@
+# Table of Contents
 
-### Jetty Based Web Session Replication
+* [Jetty Based Web Session Replication](#jetty-based-web-session-replication)
+  * [Hazelcast Jetty Features and Requirements](#hazelcast-jetty-features-and-requirements)
+  * [How Jetty Session Replication Works](#how-jetty-session-replication-works)
+  * [Deploying P2P for Jetty](#deploying-p2p-for-jetty)
+  * [Deploying Client/Server for Jetty](#deploying-client-server-for-jetty)
+  * [Configuring HazelcastSessionIdManager for Jetty](#configuring-hazelcastsessionidmanager-for-jetty)
+  * [Configuring HazelcastSessionManager for Jetty](#configuring-hazelcastsessionmanager-for-jetty)
+  * [Setting Session Expiration](#setting-session-expiration)
+  * [Sticky Sessions and Jetty](#sticky-sessions-and-jetty)
+
+
+# Jetty Based Web Session Replication
 
 ***Sample Code:*** *Please see our <a href="https://github.com/hazelcast/hazelcast-code-samples/tree/master/hazelcast-integration/manager-based-session-replication" target="_blank">sample application</a> for Jetty Based Web Session Replication.*
 
 
-#### Hazelcast Jetty Features and Requirements
+## Hazelcast Jetty Features and Requirements
 
 <a href="https://github.com/hazelcast/hazelcast-jetty-sessionmanager" target="_blank">Hazelcast Jetty Session Manager</a> is a container specific module that enables session replication for JEE Web Applications without requiring changes to the application.
 
@@ -33,7 +45,7 @@ Latest tested versions are **7.6.16.v20140903**, **8.1.16.v20140903** and **9.2.
  - Hazelcast Jetty-based Web Session Replication is built on top of the `jetty-nosql` module. This module (`jetty-nosql-<*jettyversion*>.jar`) needs to be added to `$JETTY_HOME/lib/ext`.
    This module can be found <a href="http://mvnrepository.com/artifact/org.eclipse.jetty/jetty-nosql" target="_blank">here</a>.
 
-#### How Jetty Session Replication Works
+## How Jetty Session Replication Works
 
 Hazelcast Jetty Session Manager is a Hazelcast Module where each created `HttpSession` Object's state is kept in Hazelcast Distributed Map. 
 
@@ -45,7 +57,7 @@ Jetty Web Session Replication runs in two different modes:
 - **Client/Server**: all Jetty instances put/retrieve the session data to/from an existing Hazelcast Cluster.
 
 
-#### Deploying P2P (Peer-to-Peer) for Jetty
+## Deploying P2P for Jetty
 
 P2P deployment launches embedded Hazelcast member in each server instance.
 
@@ -110,7 +122,7 @@ The following steps configure a sample P2P for Hazelcast Session Replication.
  ```
 
 
-#### Deploying Client/Server for Jetty
+## Deploying Client/Server for Jetty
 
 In client/server deployment type, Jetty instances work as clients to an existing Hazelcast Cluster.
 
@@ -181,7 +193,7 @@ The following steps configure a sample Client/Server for Hazelcast Session Repli
 
 
 
-#### Configuring HazelcastSessionIdManager for Jetty
+## Configuring HazelcastSessionIdManager for Jetty
 
 `HazelcastSessionIdManager` is used both in P2P and Client/Server mode. Use the following parameters to configure the Jetty Session Replication Module to better serve your needs.
 
@@ -189,9 +201,9 @@ The following steps configure a sample Client/Server for Hazelcast Session Repli
 - `cleanUpPeriod`: Defines the working period of session clean-up task in milliseconds.
 - `configLocation`: specifies the location of `hazelcast.xml`.
 
-<br></br>
 
-#### Configuring HazelcastSessionManager for Jetty
+
+## Configuring HazelcastSessionManager for Jetty
 
 `HazelcastSessionManager` is used both in P2P and Client/Server mode. Use the following parameters to configure Jetty Session Replication Module to better serve your needs.
 
@@ -208,14 +220,14 @@ Notes:
 <br></br>
 
 
-#### Setting Session Expiration
+## Setting Session Expiration
 
 Based on Tomcat configuration or `sessionTimeout` setting in `web.xml`, the sessions are expired over time. This requires a cleanup on Hazelcast Cluster, since there is no need to keep expired sessions in it. 
 
 `cleanUpPeriod`, which is defined in `HazelcastSessionIdManager`, is the only setting that controls the behavior of session expiry policy in Jetty Web Session Replication Module. By setting this, you can set the frequency of the session expiration checks in the Jetty Instance.
 
 
-#### Sticky Sessions and Jetty 
+## Sticky Sessions and Jetty
 
 `HazelcastSessionIdManager` can work in sticky and non-sticky setups.
 
@@ -235,6 +247,6 @@ If sticky sessions are enabled, the `workerName` parameter has to be set, as sho
     </New>
 </Set>
 ```
+# Compatibilities
 
-
-<br></br>
+???

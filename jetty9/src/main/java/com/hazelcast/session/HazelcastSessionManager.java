@@ -73,7 +73,7 @@ public class HazelcastSessionManager extends NoSqlSessionManager {
             sessionData.setValid(false);
         }
 
-        sessions.put(session.getClusterId(), sessionData);
+        sessions.set(session.getClusterId(), sessionData);
 
         if (activateAfterSave) {
             session.didActivate();
@@ -159,7 +159,7 @@ public class HazelcastSessionManager extends NoSqlSessionManager {
         o.setAccessed(System.currentTimeMillis());
 
         // apply the update
-        sessions.put(session.getClusterId(), o);
+        sessions.set(session.getClusterId(), o);
 
         session.didActivate();
         return version;
@@ -256,14 +256,14 @@ public class HazelcastSessionManager extends NoSqlSessionManager {
 
         if (o != null && o.isValid()) {
             o.setValid(false);
-            sessions.put(idInCluster, o);
+            sessions.set(idInCluster, o);
         }
     }
 
     @Override
     protected void update(NoSqlSession session, String newClusterId, String newNodeId) throws Exception {
         HazelcastSessionData sessionData = sessions.get(session.getClusterId());
-        sessions.put(newClusterId, sessionData);
+        sessions.set(newClusterId, sessionData);
         sessions.remove(session.getClusterId());
     }
 

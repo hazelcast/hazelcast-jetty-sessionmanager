@@ -245,6 +245,3 @@ If sticky sessions are enabled, the `workerName` parameter has to be set, as sho
     </New>
 </Set>
 ```
-# Compatibilities
-
-???

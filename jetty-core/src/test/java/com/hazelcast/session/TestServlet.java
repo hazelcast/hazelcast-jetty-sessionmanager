@@ -54,6 +54,13 @@ public class TestServlet extends HttpServlet {
             resp.getWriter().write(session.isNew() ? "true" : "false");
         } else if (req.getRequestURI().endsWith("lastAccessTime")) {
             resp.getWriter().write(String.valueOf(session.getLastAccessedTime()));
+        } else if (req.getRequestURI().endsWith("putnonserializable")) {
+            session.setAttribute("key", new Object());
+            session.setAttribute("key-2", "value");
+
+            resp.getWriter().write("true");
+        } else if (req.getRequestURI().endsWith("verifynonserializable")) {
+            resp.getWriter().write((String) session.getAttribute("key-2"));
         }
     }
 }

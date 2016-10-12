@@ -10,6 +10,7 @@ import org.eclipse.jetty.nosql.NoSqlSessionManager;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
 
@@ -104,8 +105,10 @@ public class HazelcastSessionManager extends NoSqlSessionManager {
             Object value = session.getAttribute(name);
             if (value == null) {
                 sessionData.getAttributeMap().remove(name);
-            } else {
+            } else if (value instanceof Serializable) {
                 sessionData.getAttributeMap().put(name, value);
+            } else {
+                LOG.warn("Session attribute [" + name + "] not saved since it's not Serializable");
             }
         }
         return version;

@@ -1,7 +1,9 @@
 package com.hazelcast.session;
 
+import org.eclipse.jetty.security.HashLoginService;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.session.SessionHandler;
+import org.eclipse.jetty.util.security.Credential;
 import org.eclipse.jetty.webapp.WebAppContext;
 
 import java.io.File;
@@ -10,43 +12,29 @@ import java.net.URLDecoder;
 
 public class JettyConfigurator extends WebContainerConfigurator<Server> {
 
-    Server server;
+    private final String appName;
 
-    private String clientServerConfigLocation;
-    private String p2pConfigLocation;
+    private Server server;
 
-    public JettyConfigurator(String p2pConfigLocation, String clientServerConfigLocation) {
-        super();
-        this.p2pConfigLocation = p2pConfigLocation;
-        this.clientServerConfigLocation = clientServerConfigLocation;
+    public JettyConfigurator(String appName) {
+        this.appName = appName;
     }
 
     public JettyConfigurator() {
+        this.appName = "defaultApp";
     }
 
     @Override
     public Server configure() throws Exception {
         Server server = new Server(port);
-        final URL root = new URL(JettyConfigurator.class.getResource("/"), "../test-classes");
-        final String cleanedRoot = URLDecoder.decode(root.getFile(), "UTF-8");
-
-        final String fileSeparator = File.separator.equals("\\") ? "\\\\" : File.separator;
-        final String sourceDir = cleanedRoot + File.separator + JettyConfigurator.class.getPackage().getName().replaceAll("\\.", fileSeparator) + File.separator + "webapp" + File.separator;
-
 
         WebAppContext context = new WebAppContext();
-        context.setResourceBase(sourceDir);
-        context.setDescriptor(sourceDir + "WEB-INF/web.xml");
+        context.setResourceBase("../jetty-core/src/test/resources/" + appName);
         context.setLogUrlOnStart(true);
         context.setContextPath("/");
         context.setParentLoaderPriority(true);
-        HazelcastSessionIdManager idManager;
 
-        if (!clientOnly) {
-            idManager = new HazelcastSessionIdManager(server, clientOnly, p2pConfigLocation);
-        } else {
-            idManager = new HazelcastSessionIdManager(server, clientOnly, clientServerConfigLocation);
-        }
+        HazelcastSessionIdManager idManager = new HazelcastSessionIdManager(server, clientOnly);
 
         idManager.setWorkerName("worker-" + port);
         server.setSessionIdManager(idManager);
@@ -59,6 +47,10 @@ public class JettyConfigurator extends WebContainerConfigurator<Server> {
 
         server.setHandler(context);
         server.setGracefulShutdown(0);
+
+        HashLoginService loginService = new HashLoginService();
+        loginService.putUser("someuser", Credential.getCredential("somepass"), new String[]{"role1", "role2"});
+        context.getSecurityHandler().setLoginService(loginService);
 
         return server;
     }
@@ -92,6 +84,5 @@ public class JettyConfigurator extends WebContainerConfigurator<Server> {
             System.out.println("JETTY_START_EXCEPTION");
             e.printStackTrace();
         }
-
     }
 }

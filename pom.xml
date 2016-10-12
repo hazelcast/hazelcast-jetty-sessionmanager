@@ -7,7 +7,7 @@
     <groupId>com.hazelcast</groupId>
     <artifactId>hazelcast-jetty-sessionmanager</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.0.2</version>
     <name>Hazelcast Jetty Session Manager</name>
     <description>Jetty Session Manager Module for Hazelcast</description>
     <url>http://www.hazelcast.com/</url>

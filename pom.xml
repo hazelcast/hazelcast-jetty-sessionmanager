@@ -329,6 +329,7 @@
                             </javaApiLinks>
                             <excludePackageNames>
                             </excludePackageNames>
+                            <additionalparam>-Xdoclint:none</additionalparam>
                         </configuration>
                         <executions>
                             <execution>

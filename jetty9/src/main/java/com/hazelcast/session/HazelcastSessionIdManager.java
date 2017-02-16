@@ -208,8 +208,8 @@ public class HazelcastSessionIdManager extends AbstractSessionIdManager {
     }
 
     /**
-     * Clean is a process that cleans the Hazelcast cluster of old sessions that are no
-     * longer valid.
+     * Clean is a process that cleans the Hazelcast cluster and local storage of old sessions
+     * that are no longer valid.
      *
      * There are two checks being done here:
      *
@@ -220,9 +220,25 @@ public class HazelcastSessionIdManager extends AbstractSessionIdManager {
      * set to zero so the check is skipped.
      */
     protected void cleanUp() {
-        for (Map.Entry<String, HazelcastSessionData> entry : sessions.entrySet()) {
-            if (entry.getValue().getAccessed() < System.currentTimeMillis() - cleanUpInvalidAge) {
-                sessions.remove(entry.getKey());
+        synchronized (sessionsIds) {
+            LOG.debug("HazelcastSessionIdManager:cleanUp");
+            for (Map.Entry<String, HazelcastSessionData> entry : sessions.entrySet()) {
+                if (entry.getValue().getAccessed() < System.currentTimeMillis() - cleanUpInvalidAge) {
+                    sessions.remove(entry.getKey());
+                    sessionsIds.remove(entry.getKey());
+
+                    Handler[] contexts = server.getChildHandlersByClass(ContextHandler.class);
+                    for (int i = 0; contexts != null && i < contexts.length; i++) {
+                        SessionHandler sessionHandler = ((ContextHandler) contexts[i]).getChildHandlerByClass(SessionHandler.class);
+                        if (sessionHandler != null) {
+                            SessionManager manager = sessionHandler.getSessionManager();
+
+                            if (manager != null && manager instanceof HazelcastSessionManager) {
+                                ((HazelcastSessionManager) manager).expire(entry.getKey());
+                            }
+                        }
+                    }
+                }
             }
         }
     }

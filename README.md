@@ -189,7 +189,7 @@ The following steps configure a sample Client/Server for Hazelcast Session Repli
 
 8. Launch a Hazelcast Instance using `$HAZELCAST_ROOT/bin/server.sh` or `$HAZELCAST_ROOT/bin/server.bat`.
 
-9. Start Tomcat instances with a configured load balancer and deploy the web application.
+9. Start Jetty instances with a configured load balancer and deploy the web application.
 
 
 
@@ -220,7 +220,7 @@ Notes:
 
 # Setting Session Expiration
 
-Based on Tomcat configuration or `sessionTimeout` setting in `web.xml`, the sessions are expired over time. This requires a cleanup on Hazelcast Cluster, since there is no need to keep expired sessions in it. 
+Based on Jetty configuration or `sessionTimeout` setting in `web.xml`, the sessions are expired over time. This requires a cleanup on Hazelcast Cluster, since there is no need to keep expired sessions in it. 
 
 `cleanUpPeriod`, which is defined in `HazelcastSessionIdManager`, is the only setting that controls the behavior of session expiry policy in Jetty Web Session Replication Module. By setting this, you can set the frequency of the session expiration checks in the Jetty Instance.
 

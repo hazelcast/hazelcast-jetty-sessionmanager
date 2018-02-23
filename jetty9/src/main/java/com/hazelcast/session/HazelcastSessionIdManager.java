@@ -208,8 +208,8 @@ public class HazelcastSessionIdManager extends AbstractSessionIdManager {
     }
 
     /**
-     * Clean is a process that cleans the Hazelcast cluster of old sessions that are no
-     * longer valid.
+     * Clean is a process that cleans the Hazelcast cluster and local storage of old sessions
+     * that are no longer valid.
      *
      * There are two checks being done here:
      *
@@ -220,9 +220,39 @@ public class HazelcastSessionIdManager extends AbstractSessionIdManager {
      * set to zero so the check is skipped.
      */
     protected void cleanUp() {
-        for (Map.Entry<String, HazelcastSessionData> entry : sessions.entrySet()) {
-            if (entry.getValue().getAccessed() < System.currentTimeMillis() - cleanUpInvalidAge) {
-                sessions.remove(entry.getKey());
+        synchronized (sessionsIds) {
+            LOG.debug("Starting cleanup");
+            for (Map.Entry<String, HazelcastSessionData> entry : sessions.entrySet()) {
+                if (entry.getValue().getAccessed() < System.currentTimeMillis() - cleanUpInvalidAge) {
+                    sessions.remove(entry.getKey());
+                    sessionsIds.remove(entry.getKey());
+
+                    removeLocallyStoredSessionFromManager(entry.getKey());
+                }
+            }
+
+            // Another Hazelcast instance in the cluster might have removed sessions that are still stored locally
+            Set<String> existingSessionIds = new HashSet<String>();
+            existingSessionIds.addAll(sessionsIds);
+            for (String sessionId : existingSessionIds) {
+                if (!sessions.containsKey(sessionId)) {
+                    sessionsIds.remove(sessionId);
+                    removeLocallyStoredSessionFromManager(sessionId);
+                }
+            }
+        }
+    }
+
+    private void removeLocallyStoredSessionFromManager(String sessionId) {
+        Handler[] contexts = server.getChildHandlersByClass(ContextHandler.class);
+        for (int i = 0; contexts != null && i < contexts.length; i++) {
+            SessionHandler sessionHandler = ((ContextHandler) contexts[i]).getChildHandlerByClass(SessionHandler.class);
+            if (sessionHandler != null) {
+                SessionManager manager = sessionHandler.getSessionManager();
+
+                if (manager != null && manager instanceof HazelcastSessionManager) {
+                    ((HazelcastSessionManager) manager).expire(sessionId);
+                }
             }
         }
     }

@@ -4,7 +4,7 @@
 
 package com.hazelcast.session;
 
-import com.hazelcast.core.IMap;
+import com.hazelcast.map.IMap;
 import org.eclipse.jetty.nosql.NoSqlSession;
 import org.eclipse.jetty.nosql.NoSqlSessionManager;
 import org.eclipse.jetty.util.log.Log;

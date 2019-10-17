@@ -14,7 +14,7 @@
     <packaging>jar</packaging>
 
     <properties>
-        <jetty.version>7.6.16.v20140903</jetty.version>
+        <jetty.version>9.4.21.v20190926</jetty.version>
         <!-- needed for checkstyle/findbugs -->
         <main.basedir>${project.parent.basedir}</main.basedir>
     </properties>

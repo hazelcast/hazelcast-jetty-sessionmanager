@@ -1,6 +1,6 @@
 **!!!Jetty Session Persistence Support via Hazelcast is maintained by Jetty Project. !!!***
 
-**Please refer to <a href="https://www.eclipse.org/jetty/documentation/9.4.21.v20190926/configuring-sessions-hazelcast.html" target="_blank">Jetty Project Page</a>**
+**Please refer to <a href="https://www.eclipse.org/jetty/documentation/9.4.21.v20190926/configuring-sessions-hazelcast.html" target="_blank">Jetty Documentation</a> and <a href="https://github.com/eclipse/jetty.project/tree/jetty-9.4.x/jetty-hazelcast" target="_blank">Github</a>**
 
 
 # Table of Contents
